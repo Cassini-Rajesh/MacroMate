@@ -117,7 +117,7 @@ export default function ContactPage() {
 
           <div className="mt-12 text-center text-gray-600">
             <p className="mb-2">
-              <strong>Email:</strong> macromate.app@gmail.com
+              <strong>Email:</strong> cassini.rajesh9@gmail.com
             </p>
             <p>
               <strong>Built at Penn State University</strong>
