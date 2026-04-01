@@ -2,6 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  console.log('middleware hit:', request.nextUrl.pathname)
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -33,19 +35,20 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
+  const pathname = request.nextUrl.pathname
+  const normalizedPathname = pathname === '/' ? '/' : pathname.replace(/\/+$/, '')
 
-  const publicRoutes = [
+  const publicRoutes = new Set([
     '/',
     '/login',
-    '/signup', 
+    '/signup',
     '/about',
     '/contact',
     '/how-it-works',
-  ]
+  ])
 
-  const isPublicRoute = publicRoutes.includes(pathname) || 
-    pathname.startsWith('/api/')
+  const isPublicRoute =
+    publicRoutes.has(normalizedPathname) || normalizedPathname.startsWith('/api/')
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
@@ -58,6 +61,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/',
+    '/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
