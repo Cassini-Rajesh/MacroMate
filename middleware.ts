@@ -23,11 +23,22 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const result = await supabase.auth.getUser()
+    user = result.data?.user ?? null
+  } catch {
+    user = null
+  }
 
+  const publicRoutes = ['/', '/login', '/signup', '/about', '/contact', '/how-it-works', '/api/auth/callback', '/api/create-profile', '/api/analyze-meal']
   const protectedRoutes = ['/dashboard', '/log', '/onboarding', '/subscribe']
   const authRoutes = ['/login', '/signup']
   const pathname = request.nextUrl.pathname
+
+  if (publicRoutes.some(r => pathname === r || pathname.startsWith(`${r}/`))) {
+    return supabaseResponse
+  }
 
   if (!user && protectedRoutes.some(r => pathname.startsWith(r))) {
     return NextResponse.redirect(new URL('/login', request.url))
