@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, PlusIcon } from 'lucide-react'
 import Link from 'next/link'
 import MacroBar from './MacroBar'
 
@@ -13,6 +13,10 @@ interface Meal {
   protein: number
   carbs: number
   fat: number
+  saturated_fat?: number
+  fiber?: number
+  sugar?: number
+  sodium?: number
   logged_at: string
 }
 
@@ -32,7 +36,7 @@ interface Props {
 export default function DashboardMeals({ initialMeals, profile }: Props) {
   const [meals, setMeals] = useState<Meal[]>(initialMeals)
   const [editingMealId, setEditingMealId] = useState<string | null>(null)
-  const [editValues, setEditValues] = useState({ food_name: '', calories: 0, protein: 0, carbs: 0, fat: 0 })
+  const [editValues, setEditValues] = useState({ food_name: '', calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0, saturated_fat: 0 })
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -46,8 +50,12 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
         protein: acc.protein + meal.protein,
         carbs: acc.carbs + meal.carbs,
         fat: acc.fat + meal.fat,
+        fiber: acc.fiber + (meal.fiber ?? 0),
+        sugar: acc.sugar + (meal.sugar ?? 0),
+        sodium: acc.sodium + (meal.sodium ?? 0),
+        saturatedFat: acc.saturatedFat + (meal.saturated_fat ?? 0),
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0, saturatedFat: 0 }
     )
   }, [meals])
 
@@ -59,6 +67,10 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
       protein: meal.protein,
       carbs: meal.carbs,
       fat: meal.fat,
+      fiber: meal.fiber ?? 0,
+      sugar: meal.sugar ?? 0,
+      sodium: meal.sodium ?? 0,
+      saturated_fat: meal.saturated_fat ?? 0,
     })
     setError('')
     setConfirmDeleteId(null)
@@ -81,6 +93,10 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
         protein: editValues.protein,
         carbs: editValues.carbs,
         fat: editValues.fat,
+        fiber: editValues.fiber,
+        sugar: editValues.sugar,
+        sodium: editValues.sodium,
+        saturated_fat: editValues.saturated_fat,
       })
       .eq('id', mealId)
       .select()
@@ -133,6 +149,28 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
           <MacroBar label="Protein" consumed={totals.protein} target={profile.daily_protein} color="bg-blue-400" unit="g" />
           <MacroBar label="Carbs" consumed={totals.carbs} target={profile.daily_carbs} color="bg-yellow-400" unit="g" />
           <MacroBar label="Fat" consumed={totals.fat} target={profile.daily_fat} color="bg-pink-400" unit="g" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <div className="rounded-3xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+            <div className="font-semibold">🌾 Fiber</div>
+            <div className="mt-2 text-lg font-bold">{totals.fiber}g</div>
+            <div className="text-xs text-blue-600/80">Goal 25g</div>
+          </div>
+          <div className="rounded-3xl border border-pink-100 bg-pink-50 p-4 text-sm text-pink-700">
+            <div className="font-semibold">🍬 Sugar</div>
+            <div className="mt-2 text-lg font-bold">{totals.sugar}g</div>
+            <div className="text-xs text-pink-600/80">Track only</div>
+          </div>
+          <div className="rounded-3xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+            <div className="font-semibold">🧂 Sodium</div>
+            <div className="mt-2 text-lg font-bold">{totals.sodium}mg</div>
+            <div className="text-xs text-yellow-600/80">Limit 2300mg</div>
+          </div>
+          <div className="rounded-3xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            <div className="font-semibold">🥩 Saturated Fat</div>
+            <div className="mt-2 text-lg font-bold">{totals.saturatedFat}g</div>
+            <div className="text-xs text-red-600/80">Limit 20g</div>
+          </div>
         </div>
       </div>
 
@@ -206,6 +244,10 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
                       <Field label="Protein" value={String(editValues.protein)} onChange={value => setEditValues(prev => ({ ...prev, protein: Number(value) }))} type="number" />
                       <Field label="Carbs" value={String(editValues.carbs)} onChange={value => setEditValues(prev => ({ ...prev, carbs: Number(value) }))} type="number" />
                       <Field label="Fat" value={String(editValues.fat)} onChange={value => setEditValues(prev => ({ ...prev, fat: Number(value) }))} type="number" />
+                      <Field label="Fiber" value={String(editValues.fiber)} onChange={value => setEditValues(prev => ({ ...prev, fiber: Number(value) }))} type="number" />
+                      <Field label="Sugar" value={String(editValues.sugar)} onChange={value => setEditValues(prev => ({ ...prev, sugar: Number(value) }))} type="number" />
+                      <Field label="Sodium" value={String(editValues.sodium)} onChange={value => setEditValues(prev => ({ ...prev, sodium: Number(value) }))} type="number" />
+                      <Field label="Sat Fat" value={String(editValues.saturated_fat)} onChange={value => setEditValues(prev => ({ ...prev, saturated_fat: Number(value) }))} type="number" />
                     </div>
                     <div className="flex gap-3">
                       <button
@@ -277,14 +319,5 @@ function MacroChip({ label, value }: { label: string; value: number }) {
       <div className="font-bold text-sm">{value}g</div>
       <div className="text-xs opacity-70">{label}</div>
     </div>
-  )
-}
-
-function PlusIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 4V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
   )
 }

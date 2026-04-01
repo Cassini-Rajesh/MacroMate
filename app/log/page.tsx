@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Mic, PenLine, ArrowLeft, Upload, Loader2 } from 'lucide-react'
@@ -14,23 +14,68 @@ interface MealData {
   protein: number
   carbs: number
   fat: number
+  saturatedFat: number
+  fiber: number
+  sugar: number
+  sodium: number
   portionEstimate: string
 }
 
+interface BarcodeProduct {
+  code: string
+  productName: string
+  brand: string
+  servingSize: string
+  energyKcal100g: number
+  proteins100g: number
+  carbohydrates100g: number
+  fat100g: number
+  fiber100g: number
+  sugars100g: number
+  sodium100g: number
+  saturatedFat100g: number
+  energyKcalServing?: number
+}
+
+type Html5QrcodeScannerType = {
+  render: (onSuccess: (decodedText: string) => void, onError: (error: unknown) => void) => void
+  clear: () => Promise<void>
+}
+
+type Html5QrcodeScannerConstructor = new (
+  elementId: string,
+  config: { fps: number; qrbox: { width: number; height: number }; rememberLastUsedCamera: boolean; verbose: boolean },
+  verbose: boolean
+) => Html5QrcodeScannerType
+
+declare global {
+  interface Window {
+    Html5QrcodeScanner?: Html5QrcodeScannerConstructor
+  }
+}
+
 export default function LogPage() {
-  const [tab, setTab] = useState<'photo' | 'voice' | 'manual'>('photo')
+  const [tab, setTab] = useState<'photo' | 'barcode' | 'voice' | 'manual'>('photo')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [compressedImageFile, setCompressedImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [voiceText, setVoiceText] = useState('')
   const [manualText, setManualText] = useState('')
+  const [manualNutrition, setManualNutrition] = useState({ fiber: 0, sugar: 0, sodium: 0, saturatedFat: 0 })
   const [mealData, setMealData] = useState<MealData | null>(null)
   const [fullMealData, setFullMealData] = useState<MealData | null>(null)
   const [selectedPortion, setSelectedPortion] = useState<'1/4' | '1/2' | '3/4' | 'Full'>('Full')
+  const [selectedServings, setSelectedServings] = useState<0.5 | 1 | 1.5 | 2>(1)
+  const [barcode, setBarcode] = useState('')
+  const [manualBarcode, setManualBarcode] = useState('')
+  const [barcodeProduct, setBarcodeProduct] = useState<BarcodeProduct | null>(null)
+  const [barcodeError, setBarcodeError] = useState('')
+  const [scannerLoaded, setScannerLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+  const scannerRef = useRef<Html5QrcodeScannerType | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -83,6 +128,94 @@ export default function LogPage() {
     }
   }
 
+  useEffect(() => {
+    if (tab !== 'barcode') return
+    if (scannerRef.current || typeof window === 'undefined') return
+
+    const existingScript = document.querySelector('script[data-html5-qrcode]')
+    if (!existingScript) {
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/html5-qrcode'
+      script.async = true
+      script.setAttribute('data-html5-qrcode', 'true')
+      script.onload = () => setScannerLoaded(true)
+      document.body.appendChild(script)
+    } else {
+      setScannerLoaded(true)
+    }
+  }, [tab])
+
+  useEffect(() => {
+    if (tab !== 'barcode' || !scannerLoaded || scannerRef.current || typeof window === 'undefined') return
+    const Html5QrcodeScanner = window.Html5QrcodeScanner
+    if (!Html5QrcodeScanner) return
+
+    const scanner = new Html5QrcodeScanner('barcode-reader', {
+      fps: 10,
+      qrbox: { width: 280, height: 80 },
+      rememberLastUsedCamera: true,
+      verbose: false,
+    }, false)
+
+    scanner.render(
+      (decodedText: string) => {
+        if (decodedText && decodedText !== barcode) {
+          setBarcode(decodedText)
+          fetchBarcodeProduct(decodedText)
+        }
+      },
+      () => {}
+    )
+
+    scannerRef.current = scanner
+
+    return () => {
+      scanner.clear().catch(() => undefined)
+      scannerRef.current = null
+    }
+  }, [tab, scannerLoaded, barcode])
+
+  async function fetchBarcodeProduct(code: string) {
+    setBarcodeError('')
+    setBarcodeProduct(null)
+    setSelectedServings(1)
+
+    try {
+      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`)
+      if (!res.ok) throw new Error('Product fetch failed')
+      const body = await res.json()
+      if (!body?.product) {
+        setBarcodeError('Product not found — try manual entry')
+        return
+      }
+
+      const product = body.product
+      const nutriments = product.nutriments || {}
+      const sodium100g = Number(nutriments.sodium_100g || 0)
+      const parsed: BarcodeProduct = {
+        code,
+        productName: product.product_name || 'Unknown product',
+        brand: product.brands || 'Unknown brand',
+        servingSize: product.serving_size || '1 serving',
+        energyKcal100g: Number(nutriments['energy-kcal_100g'] || nutriments.energy_100g || 0),
+        proteins100g: Number(nutriments.proteins_100g || 0),
+        carbohydrates100g: Number(nutriments.carbohydrates_100g || 0),
+        fat100g: Number(nutriments.fat_100g || 0),
+        fiber100g: Number(nutriments.fiber_100g || 0),
+        sugars100g: Number(nutriments.sugars_100g || nutriments.sugar_100g || 0),
+        sodium100g,
+        saturatedFat100g: Number(nutriments['saturated-fat_100g'] || nutriments.saturated_fat_100g || 0),
+        energyKcalServing: nutriments['energy-kcal_serving'] ? Number(nutriments['energy-kcal_serving']) : nutriments.energy_serving ? Number(nutriments.energy_serving) : undefined,
+      }
+
+      setBarcodeProduct(parsed)
+      setBarcodeError('')
+    } catch (err) {
+      console.error('Barcode lookup failed', err)
+      setBarcodeError('Product not found — try manual entry')
+    }
+  }
+
   const PORTION_MULTIPLIERS: Record<'1/4' | '1/2' | '3/4' | 'Full', number> = {
     '1/4': 0.25,
     '1/2': 0.5,
@@ -109,6 +242,10 @@ export default function LogPage() {
       protein: Math.round(fullData.protein * multiplier),
       carbs: Math.round(fullData.carbs * multiplier),
       fat: Math.round(fullData.fat * multiplier),
+      saturatedFat: Number((fullData.saturatedFat * multiplier).toFixed(1)),
+      fiber: Number((fullData.fiber * multiplier).toFixed(1)),
+      sugar: Number((fullData.sugar * multiplier).toFixed(1)),
+      sodium: Math.round(fullData.sodium * multiplier),
       portionEstimate: buildPortionEstimate(fullData.portionEstimate, portion),
     }
   }
@@ -128,9 +265,16 @@ export default function LogPage() {
       if (!res.ok || data.error) {
         setError(data.error || `Analyze failed: ${res.status}`)
       } else {
-        setFullMealData(data)
+        const merged = {
+          fiber: manualNutrition.fiber || data.fiber || 0,
+          sugar: manualNutrition.sugar || data.sugar || 0,
+          sodium: manualNutrition.sodium || data.sodium || 0,
+          saturatedFat: manualNutrition.saturatedFat || data.saturatedFat || 0,
+          ...data,
+        }
+        setFullMealData(merged)
         setSelectedPortion('Full')
-        setMealData(data)
+        setMealData(merged)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze meal')
@@ -154,9 +298,16 @@ export default function LogPage() {
       if (!res.ok || data.error) {
         setError(data.error || `Analyze failed: ${res.status}`)
       } else {
-        setFullMealData(data)
+        const merged = {
+          fiber: manualNutrition.fiber || data.fiber || 0,
+          sugar: manualNutrition.sugar || data.sugar || 0,
+          sodium: manualNutrition.sodium || data.sodium || 0,
+          saturatedFat: manualNutrition.saturatedFat || data.saturatedFat || 0,
+          ...data,
+        }
+        setFullMealData(merged)
         setSelectedPortion('Full')
-        setMealData(data)
+        setMealData(merged)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze meal')
@@ -179,6 +330,10 @@ export default function LogPage() {
       protein: mealData.protein,
       carbs: mealData.carbs,
       fat: mealData.fat,
+      saturated_fat: mealData.saturatedFat,
+      fiber: mealData.fiber,
+      sugar: mealData.sugar,
+      sodium: mealData.sodium,
     })
 
     if (error) { setError(error.message); setSaving(false); return }
@@ -212,12 +367,17 @@ export default function LogPage() {
         <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-2xl">
           {[
             { id: 'photo', label: 'Photo', icon: Camera },
+            { id: 'barcode', label: 'Barcode', icon: Upload },
             { id: 'voice', label: 'Describe', icon: Mic },
             { id: 'manual', label: 'Manual', icon: PenLine },
           ].map(t => (
             <button
               key={t.id}
-              onClick={() => { setTab(t.id as typeof tab); setMealData(null); setError('') }}
+              onClick={() => {
+                setTab(t.id as typeof tab)
+                setMealData(null)
+                setError('')
+              }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                 tab === t.id ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
               }`}
@@ -272,6 +432,127 @@ export default function LogPage() {
           </div>
         )}
 
+        {/* Barcode Tab */}
+        {tab === 'barcode' && (
+          <div className="space-y-4">
+            <div className="relative rounded-3xl overflow-hidden border border-gray-200 bg-black">
+              <div id="barcode-reader" className="w-full h-80" />
+              <div className="absolute inset-x-0 top-1/2 h-0.5 bg-green-400 opacity-90" />
+            </div>
+            <p className="text-gray-500 text-sm">Use your camera to scan a barcode, or type it in manually below.</p>
+            <div className="grid gap-3">
+              <input
+                value={manualBarcode}
+                onChange={e => setManualBarcode(e.target.value)}
+                placeholder="Enter barcode manually"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => manualBarcode && fetchBarcodeProduct(manualBarcode)}
+                disabled={!manualBarcode || loading}
+                className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-colors"
+              >
+                Lookup Product
+              </button>
+            </div>
+            {barcodeError && <div className="text-red-600 text-sm">{barcodeError}</div>}
+            {barcodeProduct && (
+              <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">{barcodeProduct.productName}</h3>
+                    <p className="text-gray-500 text-sm">{barcodeProduct.brand}</p>
+                  </div>
+                  <span className="text-sm text-gray-500">{barcodeProduct.servingSize}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="font-semibold text-gray-900">Per 100g</p>
+                    <p>Calories: {barcodeProduct.energyKcal100g}</p>
+                    <p>Protein: {barcodeProduct.proteins100g}g</p>
+                    <p>Carbs: {barcodeProduct.carbohydrates100g}g</p>
+                    <p>Fat: {barcodeProduct.fat100g}g</p>
+                    <p>Fiber: {barcodeProduct.fiber100g}g</p>
+                    <p>Sugar: {barcodeProduct.sugars100g}g</p>
+                    <p>Sodium: {Math.round(barcodeProduct.sodium100g * 1000)}mg</p>
+                    <p>Saturated Fat: {barcodeProduct.saturatedFat100g}g</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="font-semibold text-gray-900">Per Serving</p>
+                    <p>Calories: {barcodeProduct.energyKcalServing ? barcodeProduct.energyKcalServing : '—'}</p>
+                    <p>Protein: {barcodeProduct.energyKcalServing ? (barcodeProduct.proteins100g * 1).toFixed(1) : '—'}g</p>
+                    <p>Carbs: {barcodeProduct.energyKcalServing ? (barcodeProduct.carbohydrates100g * 1).toFixed(1) : '—'}g</p>
+                    <p>Fat: {barcodeProduct.energyKcalServing ? (barcodeProduct.fat100g * 1).toFixed(1) : '—'}g</p>
+                    <p>Fiber: {barcodeProduct.energyKcalServing ? (barcodeProduct.fiber100g * 1).toFixed(1) : '—'}g</p>
+                    <p>Sugar: {barcodeProduct.energyKcalServing ? (barcodeProduct.sugars100g * 1).toFixed(1) : '—'}g</p>
+                    <p>Sodium: {barcodeProduct.energyKcalServing ? Math.round(barcodeProduct.sodium100g * 1000) : '—'}mg</p>
+                    <p>Saturated Fat: {barcodeProduct.energyKcalServing ? barcodeProduct.saturatedFat100g.toFixed(1) : '—'}g</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[0.5, 1, 1.5, 2].map(value => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setSelectedServings(value as 0.5 | 1 | 1.5 | 2)}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+                        selectedServings === value ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {value}x
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!barcodeProduct) return
+                    const calories = barcodeProduct.energyKcalServing
+                      ? Math.round(barcodeProduct.energyKcalServing * selectedServings)
+                      : Math.round(barcodeProduct.energyKcal100g * selectedServings)
+                    const protein = Number((barcodeProduct.proteins100g * selectedServings).toFixed(1))
+                    const carbs = Number((barcodeProduct.carbohydrates100g * selectedServings).toFixed(1))
+                    const fat = Number((barcodeProduct.fat100g * selectedServings).toFixed(1))
+                    const fiber = Number((barcodeProduct.fiber100g * selectedServings).toFixed(1))
+                    const sugar = Number((barcodeProduct.sugars100g * selectedServings).toFixed(1))
+                    const sodium = Math.round(barcodeProduct.sodium100g * 1000 * selectedServings)
+                    const saturatedFat = Number((barcodeProduct.saturatedFat100g * selectedServings).toFixed(1))
+
+                    setMealData({
+                      foodName: barcodeProduct.productName,
+                      calories,
+                      protein,
+                      carbs,
+                      fat,
+                      fiber,
+                      sugar,
+                      sodium,
+                      saturatedFat,
+                      portionEstimate: `${selectedServings} x ${barcodeProduct.servingSize}`,
+                    })
+                    setFullMealData({
+                      foodName: barcodeProduct.productName,
+                      calories,
+                      protein,
+                      carbs,
+                      fat,
+                      fiber,
+                      sugar,
+                      sodium,
+                      saturatedFat,
+                      portionEstimate: `${selectedServings} x ${barcodeProduct.servingSize}`,
+                    })
+                  }}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition-colors"
+                >
+                  Use Product
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Manual Tab */}
         {tab === 'manual' && (
           <div className="space-y-4">
@@ -282,6 +563,36 @@ export default function LogPage() {
               className="w-full px-4 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
               placeholder="What did you eat? e.g. 'Chicken burrito bowl'"
             />
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="number"
+                value={manualNutrition.fiber}
+                onChange={e => setManualNutrition(prev => ({ ...prev, fiber: Number(e.target.value) }))}
+                placeholder="Fiber (g)"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+              />
+              <input
+                type="number"
+                value={manualNutrition.sugar}
+                onChange={e => setManualNutrition(prev => ({ ...prev, sugar: Number(e.target.value) }))}
+                placeholder="Sugar (g)"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+              />
+              <input
+                type="number"
+                value={manualNutrition.sodium}
+                onChange={e => setManualNutrition(prev => ({ ...prev, sodium: Number(e.target.value) }))}
+                placeholder="Sodium (mg)"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+              />
+              <input
+                type="number"
+                value={manualNutrition.saturatedFat}
+                onChange={e => setManualNutrition(prev => ({ ...prev, saturatedFat: Number(e.target.value) }))}
+                placeholder="Saturated Fat (g)"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+              />
+            </div>
             <button onClick={() => analyzeText(manualText)} disabled={!manualText || loading} className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
               {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : 'Analyze with AI'}
             </button>
@@ -316,6 +627,10 @@ export default function LogPage() {
                 <EditableField label="Protein (g)" value={mealData.protein} onChange={v => updateMealField('protein', v)} />
                 <EditableField label="Carbs (g)" value={mealData.carbs} onChange={v => updateMealField('carbs', v)} />
                 <EditableField label="Fat (g)" value={mealData.fat} onChange={v => updateMealField('fat', v)} />
+                <EditableField label="Saturated Fat (g)" value={mealData.saturatedFat} onChange={v => updateMealField('saturatedFat', v)} />
+                <EditableField label="Fiber (g)" value={mealData.fiber} onChange={v => updateMealField('fiber', v)} />
+                <EditableField label="Sugar (g)" value={mealData.sugar} onChange={v => updateMealField('sugar', v)} />
+                <EditableField label="Sodium (mg)" value={mealData.sodium} onChange={v => updateMealField('sodium', v)} />
               </div>
             </div>
             <p className="text-gray-400 text-xs mb-4">Feel free to adjust any values before saving.</p>

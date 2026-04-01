@@ -37,16 +37,24 @@ Return ONLY a valid JSON object with no markdown, no code fences:
   protein: number (rounded to nearest gram),
   carbs: number (rounded to nearest gram),
   fat: number (rounded to nearest gram),
+  saturatedFat: number (rounded to nearest gram),
+  fiber: number (rounded to nearest gram),
+  sugar: number (rounded to nearest gram),
+  sodium: number (rounded to nearest mg),
   portionEstimate: string (one line: what you see and estimated total weight)
 }`
 
-const TEXT_SYSTEM_PROMPT = `You are a nutrition expert. The user has described a meal they ate. Analyze the described meal as one full serving. Return ONLY a valid JSON object with no markdown, no code fences, no extra text whatsoever:
+const TEXT_SYSTEM_PROMPT = `You are a precise nutrition expert. The user has described a meal they ate. Analyze the described meal as one full serving. Return ONLY a valid JSON object with no markdown, no code fences, no extra text whatsoever:
 {
   foodName: string,
   calories: number,
   protein: number,
   carbs: number,
   fat: number,
+  saturatedFat: number,
+  fiber: number,
+  sugar: number,
+  sodium: number,
   portionEstimate: string
 }
 The portionEstimate should be a simple one-line description like Full plate of pasta approximately 600g. The numbers should represent the FULL portion described.`
