@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Mic, PenLine, ArrowLeft, Upload, Loader2 } from 'lucide-react'
@@ -37,20 +37,15 @@ interface BarcodeProduct {
   energyKcalServing?: number
 }
 
-type Html5QrcodeScannerType = {
-  render: (onSuccess: (decodedText: string) => void, onError: (error: unknown) => void) => void
-  clear: () => Promise<void>
+interface ZXingLibrary {
+  BrowserMultiFormatReader: new () => {
+    decodeFromImageElement(image: HTMLImageElement): Promise<{ text: string; getText?: () => string }>
+  }
 }
-
-type Html5QrcodeScannerConstructor = new (
-  elementId: string,
-  config: { fps: number; qrbox: { width: number; height: number }; rememberLastUsedCamera: boolean; verbose: boolean },
-  verbose: boolean
-) => Html5QrcodeScannerType
 
 declare global {
   interface Window {
-    Html5QrcodeScanner?: Html5QrcodeScannerConstructor
+    ZXing?: ZXingLibrary
   }
 }
 
@@ -67,15 +62,16 @@ export default function LogPage() {
   const [selectedPortion, setSelectedPortion] = useState<'1/4' | '1/2' | '3/4' | 'Full'>('Full')
   const [selectedServings, setSelectedServings] = useState<0.5 | 1 | 1.5 | 2>(1)
   const [barcode, setBarcode] = useState('')
+  const [barcodeImagePreview, setBarcodeImagePreview] = useState<string | null>(null)
   const [manualBarcode, setManualBarcode] = useState('')
   const [barcodeProduct, setBarcodeProduct] = useState<BarcodeProduct | null>(null)
   const [barcodeError, setBarcodeError] = useState('')
-  const [scannerLoaded, setScannerLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingBarcode, setLoadingBarcode] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
-  const scannerRef = useRef<Html5QrcodeScannerType | null>(null)
+  const barcodeInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -128,91 +124,95 @@ export default function LogPage() {
     }
   }
 
-  useEffect(() => {
-    if (tab !== 'barcode') return
-    if (scannerRef.current || typeof window === 'undefined') return
+  async function handleBarcodeImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-    const existingScript = document.querySelector('script[data-html5-qrcode]')
-    if (!existingScript) {
+    setBarcodeImagePreview(URL.createObjectURL(file))
+    setBarcodeError('')
+    setBarcodeProduct(null)
+    setBarcode('')
+
+    try {
+      const decoded = await decodeBarcodeImage(file)
+      if (!decoded) {
+        setBarcodeError('Unable to detect barcode from image. Please enter it manually.')
+        return
+      }
+      setBarcode(decoded)
+      await fetchBarcodeProduct(decoded)
+    } catch (err) {
+      console.error('Barcode decode failed', err)
+      setBarcodeError('Unable to detect barcode from image. Please enter it manually.')
+    }
+  }
+
+  async function loadZXing() {
+    if (typeof window === 'undefined') throw new Error('Window not available')
+    if (window.ZXing) return window.ZXing
+
+    return new Promise<ZXingLibrary>((resolve, reject) => {
+      const existingScript = document.querySelector('script[data-zxing]') as HTMLScriptElement | null
+      if (existingScript && window.ZXing) {
+        resolve(window.ZXing)
+        return
+      }
+
       const script = document.createElement('script')
-      script.src = 'https://unpkg.com/html5-qrcode'
+      script.src = 'https://unpkg.com/@zxing/library@latest/umd/index.min.js'
       script.async = true
-      script.setAttribute('data-html5-qrcode', 'true')
-      script.onload = () => setScannerLoaded(true)
+      script.setAttribute('data-zxing', 'true')
+      script.onload = () => {
+        if (window.ZXing) resolve(window.ZXing)
+        else reject(new Error('ZXing failed to load'))
+      }
+      script.onerror = () => reject(new Error('Failed to load ZXing'))
       document.body.appendChild(script)
-    } else {
-      setScannerLoaded(true)
+    })
+  }
+
+  async function decodeBarcodeImage(file: File) {
+    const ZXing = await loadZXing()
+    const imageUrl = URL.createObjectURL(file)
+    const img = new Image()
+    img.src = imageUrl
+
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('Image load failed'))
+    })
+
+    const codeReader = new ZXing.BrowserMultiFormatReader()
+    try {
+      const result = await codeReader.decodeFromImageElement(img)
+      URL.revokeObjectURL(imageUrl)
+      return result?.text || result?.getText?.() || ''
+    } finally {
+      URL.revokeObjectURL(imageUrl)
     }
-  }, [tab])
-
-  useEffect(() => {
-    if (tab !== 'barcode' || !scannerLoaded || scannerRef.current || typeof window === 'undefined') return
-    const Html5QrcodeScanner = window.Html5QrcodeScanner
-    if (!Html5QrcodeScanner) return
-
-    const scanner = new Html5QrcodeScanner('barcode-reader', {
-      fps: 10,
-      qrbox: { width: 280, height: 80 },
-      rememberLastUsedCamera: true,
-      verbose: false,
-    }, false)
-
-    scanner.render(
-      (decodedText: string) => {
-        if (decodedText && decodedText !== barcode) {
-          setBarcode(decodedText)
-          fetchBarcodeProduct(decodedText)
-        }
-      },
-      () => {}
-    )
-
-    scannerRef.current = scanner
-
-    return () => {
-      scanner.clear().catch(() => undefined)
-      scannerRef.current = null
-    }
-  }, [tab, scannerLoaded, barcode])
+  }
 
   async function fetchBarcodeProduct(code: string) {
     setBarcodeError('')
     setBarcodeProduct(null)
     setSelectedServings(1)
+    setLoadingBarcode(true)
 
     try {
-      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`)
-      if (!res.ok) throw new Error('Product fetch failed')
+      const res = await fetch(`/api/barcode-lookup?barcode=${encodeURIComponent(code)}`)
       const body = await res.json()
-      if (!body?.product) {
+      if (!res.ok || body.error) {
         setBarcodeError('Product not found — try manual entry')
         return
       }
 
-      const product = body.product
-      const nutriments = product.nutriments || {}
-      const sodium100g = Number(nutriments.sodium_100g || 0)
-      const parsed: BarcodeProduct = {
-        code,
-        productName: product.product_name || 'Unknown product',
-        brand: product.brands || 'Unknown brand',
-        servingSize: product.serving_size || '1 serving',
-        energyKcal100g: Number(nutriments['energy-kcal_100g'] || nutriments.energy_100g || 0),
-        proteins100g: Number(nutriments.proteins_100g || 0),
-        carbohydrates100g: Number(nutriments.carbohydrates_100g || 0),
-        fat100g: Number(nutriments.fat_100g || 0),
-        fiber100g: Number(nutriments.fiber_100g || 0),
-        sugars100g: Number(nutriments.sugars_100g || nutriments.sugar_100g || 0),
-        sodium100g,
-        saturatedFat100g: Number(nutriments['saturated-fat_100g'] || nutriments.saturated_fat_100g || 0),
-        energyKcalServing: nutriments['energy-kcal_serving'] ? Number(nutriments['energy-kcal_serving']) : nutriments.energy_serving ? Number(nutriments.energy_serving) : undefined,
-      }
-
-      setBarcodeProduct(parsed)
+      setBarcodeProduct(body)
       setBarcodeError('')
     } catch (err) {
       console.error('Barcode lookup failed', err)
       setBarcodeError('Product not found — try manual entry')
+    } finally {
+      setLoadingBarcode(false)
     }
   }
 
@@ -435,11 +435,32 @@ export default function LogPage() {
         {/* Barcode Tab */}
         {tab === 'barcode' && (
           <div className="space-y-4">
-            <div className="relative rounded-3xl overflow-hidden border border-gray-200 bg-black">
-              <div id="barcode-reader" className="w-full h-80" />
-              <div className="absolute inset-x-0 top-1/2 h-0.5 bg-green-400 opacity-90" />
+            <div className="rounded-3xl border border-gray-200 bg-white p-6 text-center">
+              <p className="text-gray-900 font-semibold text-lg mb-3">Scan a barcode with your camera</p>
+              <button
+                type="button"
+                onClick={() => barcodeInputRef.current?.click()}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-3xl transition-colors flex items-center justify-center gap-3"
+              >
+                📷 Scan Barcode with Camera
+              </button>
+              <input
+                ref={barcodeInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleBarcodeImageChange}
+                className="hidden"
+              />
+              <p className="text-gray-500 text-sm mt-3">This uses your device camera on mobile and a file picker on desktop.</p>
             </div>
-            <p className="text-gray-500 text-sm">Use your camera to scan a barcode, or type it in manually below.</p>
+            {barcodeImagePreview && (
+              <div className="rounded-3xl overflow-hidden border border-gray-200 bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={barcodeImagePreview} alt="Barcode preview" className="w-full object-contain" />
+              </div>
+            )}
+            <p className="text-gray-500 text-sm">If the barcode image cannot be read, enter the code manually below.</p>
             <div className="grid gap-3">
               <input
                 value={manualBarcode}
@@ -447,13 +468,14 @@ export default function LogPage() {
                 placeholder="Enter barcode manually"
                 className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
               />
+              {barcode && <p className="text-sm text-gray-600">Detected barcode: {barcode}</p>}
               <button
                 type="button"
                 onClick={() => manualBarcode && fetchBarcodeProduct(manualBarcode)}
-                disabled={!manualBarcode || loading}
+                disabled={!manualBarcode || loadingBarcode}
                 className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-colors"
               >
-                Lookup Product
+                {loadingBarcode ? 'Looking up product…' : 'Lookup Product'}
               </button>
             </div>
             {barcodeError && <div className="text-red-600 text-sm">{barcodeError}</div>}
