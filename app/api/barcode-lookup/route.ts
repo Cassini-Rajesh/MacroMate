@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  const barcode = request.nextUrl.searchParams.get('barcode')
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const barcode = url.searchParams.get('barcode')
   if (!barcode) {
     return NextResponse.json({ error: 'Missing barcode query parameter' }, { status: 400 })
   }
@@ -12,21 +13,29 @@ export async function GET(request: NextRequest) {
       throw new Error(`Open Food Facts request failed: ${response.status}`)
     }
 
-    const body = await response.json()
-    if (body?.status !== 1) {
+    const data = await response.json()
+    console.log('Open Food Facts response:', data)
+
+    if (data?.status !== 1 || !data.product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    const product = body.product || {}
+    const product = data.product
     const nutriments = product.nutriments || {}
     const sodium100g = Number(nutriments.sodium_100g || 0)
+    const rawEnergyKcal = nutriments['energy-kcal_100g']
+    const energyKcal100g = rawEnergyKcal != null
+      ? Number(rawEnergyKcal)
+      : nutriments.energy_100g != null
+      ? Number(nutriments.energy_100g) / 4.184
+      : 0
 
     return NextResponse.json({
       code: barcode,
       productName: product.product_name || 'Unknown product',
       brand: product.brands || 'Unknown brand',
       servingSize: product.serving_size || '1 serving',
-      energyKcal100g: Number(nutriments['energy-kcal_100g'] || nutriments.energy_100g || 0),
+      energyKcal100g,
       proteins100g: Number(nutriments.proteins_100g || 0),
       carbohydrates100g: Number(nutriments.carbohydrates_100g || 0),
       fat100g: Number(nutriments.fat_100g || 0),
