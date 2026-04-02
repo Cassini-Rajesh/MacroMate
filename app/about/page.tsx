@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Play } from 'lucide-react'
 import Logo from '../../components/Logo'
@@ -43,9 +44,19 @@ export default function AboutPage() {
           <h1 className="text-5xl font-black text-white text-center mb-8">
             Built by a college student, for college students
           </h1>
-          <p className="text-xl text-textSecondary text-center mb-16 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-textSecondary text-center mb-10 max-w-3xl mx-auto leading-relaxed">
             MacroMate was born out of frustration with existing nutrition apps that require tedious manual logging. As a Penn State Aerospace Engineering student focused on body recomposition, I wanted something smarter — an app that uses AI to do the heavy lifting so you can focus on your goals.
           </p>
+          <div className="flex justify-center mb-10">
+            <Image
+              src="/professional.jpg"
+              width={200}
+              height={200}
+              objectFit="cover"
+              className="rounded-full"
+              alt="Cassini headshot"
+            />
+          </div>
 
           {/* Video Placeholder */}
           <div className="mb-16">

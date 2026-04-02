@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Camera, Target, TrendingUp, Check, Zap } from 'lucide-react'
 import Logo from '../components/Logo'
@@ -148,14 +149,39 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-black text-textPrimary mb-12">Meet the Founder</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex flex-col items-center">
-                <div className="w-32 h-32 bg-surface rounded-full flex items-center justify-center mb-4 border border-borderSlate">
-                  <span className="text-textSecondary text-sm text-center">Your photo here</span>
-                </div>
-                <p className="text-textSecondary font-medium">Cassini — Founder & Developer</p>
-              </div>
-            ))}
+            <div className="flex flex-col items-center">
+              <Image
+                src="/professional.jpg"
+                width={400}
+                height={400}
+                objectFit="cover"
+                className="rounded-2xl mb-4"
+                alt="Cassini — Founder & Developer"
+              />
+              <p className="text-textSecondary font-medium">Cassini — Founder & Developer</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Image
+                src="/rock.jpg"
+                width={400}
+                height={400}
+                objectFit="cover"
+                className="rounded-2xl mb-4"
+                alt="Cassini — Rock Climbing"
+              />
+              <p className="text-textSecondary font-medium">Cassini — Rock Climbing</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Image
+                src="/football.jpg"
+                width={400}
+                height={400}
+                objectFit="cover"
+                className="rounded-2xl mb-4"
+                alt="Cassini — Playing Football"
+              />
+              <p className="text-textSecondary font-medium">Cassini — Playing Football</p>
+            </div>
           </div>
         </div>
       </section>
