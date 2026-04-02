@@ -20,7 +20,7 @@ export default function AboutPage() {
             <Link href="/how-it-works" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">
               How It Works
             </Link>
-            <Link href="/about" className="text-green-500 font-medium hover:text-green-600 transition-colors px-3 py-2">
+            <Link href="/about" className="text-accent font-medium hover:text-accentSoft transition-colors px-3 py-2">
               About
             </Link>
             <Link href="/contact" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">

@@ -146,46 +146,37 @@ export default function LandingPage() {
 
       {/* Meet the Founder */}
       <section className="py-20 px-4 bg-primary">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-[1200px] mx-auto text-center">
           <h2 className="text-4xl font-black text-textPrimary mb-12">Meet the Founder</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center">
-              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Rock.jpg"
-                  width={400}
-                  height={450}
-                  objectFit="cover"
-                  objectPosition="center center"
-                  className="w-full h-full"
+                  fill={true}
+                  style={{ objectFit: 'cover', objectPosition: 'center center' }}
                   alt="Rock Climbing"
                 />
               </div>
               <p className="text-accent font-medium text-center">Rock Climbing</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Professional.jpg"
-                  width={400}
-                  height={450}
-                  objectFit="cover"
-                  objectPosition="center top"
-                  className="w-full h-full"
+                  fill={true}
+                  style={{ objectFit: 'cover', objectPosition: 'center top' }}
                   alt="Founder & Developer"
                 />
               </div>
               <p className="text-accent font-medium text-center">Founder & Developer</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Football.jpg"
-                  width={400}
-                  height={450}
-                  objectFit="cover"
-                  objectPosition="center center"
-                  className="w-full h-full"
+                  fill={true}
+                  style={{ objectFit: 'cover', objectPosition: 'center center' }}
                   alt="Playing Football"
                 />
               </div>
