@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   description: 'Track your macros in seconds. Just snap a photo. Built for college students who actually care about what they eat.',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

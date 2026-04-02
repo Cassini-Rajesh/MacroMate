@@ -150,7 +150,7 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
           <MacroBar label="Carbs" consumed={totals.carbs} target={profile.daily_carbs} color="bg-macroBlue" unit="g" />
           <MacroBar label="Fat" consumed={totals.fat} target={profile.daily_fat} color="bg-macroPurple" unit="g" />
         </div>
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
           <div className="rounded-3xl border border-borderSlate bg-surface p-4 text-sm text-textPrimary">
             <div className="font-semibold">🌾 Fiber</div>
             <div className="mt-2 text-lg font-bold">{totals.fiber}g</div>
@@ -239,7 +239,7 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
                 ) : editingMealId === meal.id ? (
                   <div className="space-y-4">
                     <Field label="Meal Name" value={editValues.food_name} onChange={value => setEditValues(prev => ({ ...prev, food_name: value }))} />
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Field label="Calories" value={String(editValues.calories)} onChange={value => setEditValues(prev => ({ ...prev, calories: Number(value) }))} type="number" />
                       <Field label="Protein" value={String(editValues.protein)} onChange={value => setEditValues(prev => ({ ...prev, protein: Number(value) }))} type="number" />
                       <Field label="Carbs" value={String(editValues.carbs)} onChange={value => setEditValues(prev => ({ ...prev, carbs: Number(value) }))} type="number" />

@@ -21,6 +21,7 @@
 
 html {
   scroll-behavior: smooth;
+  touch-action: manipulation;
 }
 
 body {
@@ -29,10 +30,27 @@ body {
   min-height: 100vh;
   background: var(--color-background);
   color: var(--color-text-primary);
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+  min-height: 48px;
+}
+
+section {
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 ::selection {

@@ -1,43 +1,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Camera, Target, TrendingUp, Check, Zap } from 'lucide-react'
+import Navbar from '../components/Navbar'
 import Logo from '../components/Logo'
 import EmailCaptureForm from '../components/EmailCaptureForm'
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-primary text-textPrimary">
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-primary border-b border-accent">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo />
-            <span className="font-black text-xl text-white">MacroMate</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-white hover:text-accent transition-colors px-3 py-2">
-              Home
-            </Link>
-            <Link href="/how-it-works" className="text-white hover:text-accent transition-colors px-3 py-2">
-              How It Works
-            </Link>
-            <Link href="/about" className="text-white hover:text-accent transition-colors px-3 py-2">
-              About
-            </Link>
-            <Link href="/contact" className="text-white hover:text-accent transition-colors px-3 py-2">
-              Contact
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-white border border-borderSlate px-4 py-2 rounded-xl transition-colors hover:border-accent">
-              Sign In
-            </Link>
-            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-semibold px-5 py-2.5 rounded-xl transition-colors">
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">
@@ -46,7 +17,7 @@ export default function LandingPage() {
             <Zap className="w-4 h-4" />
             AI-Powered Nutrition Tracking
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+          <h1 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
             Track your macros<br />
             <span className="text-white">in seconds.</span><br />
             <span className="text-accent">Just snap a photo.</span>
@@ -54,11 +25,11 @@ export default function LandingPage() {
           <p className="text-xl text-textSecondary mb-10 max-w-2xl mx-auto leading-relaxed">
             Built for college students who actually care about what they eat. No more manual logging, no more guessing — just real results.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-accent/20">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch">
+            <Link href="/signup" className="w-full sm:w-auto bg-accent hover:bg-accentSoft text-black font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-accent/20 text-center">
               Start Free 14-Day Trial
             </Link>
-            <Link href="/login" className="bg-surface border border-borderSlate text-white font-bold text-lg px-8 py-4 rounded-2xl transition-colors hover:bg-surface2">
+            <Link href="/login" className="w-full sm:w-auto bg-surface border border-borderSlate text-white font-bold text-lg px-8 py-4 rounded-2xl transition-colors hover:bg-surface2 text-center">
               Sign In
             </Link>
           </div>
@@ -108,14 +79,14 @@ export default function LandingPage() {
       {/* Pricing */}
       <section className="py-20 px-4 bg-primary">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-4xl font-black text-textPrimary mb-4">Simple, honest pricing.</h2>
+          <h2 className="text-4xl md:text-5xl font-black text-textPrimary mb-4">Simple, honest pricing.</h2>
           <p className="text-textSecondary mb-10">One plan. Everything included. No hidden fees.</p>
           <div className="rounded-3xl p-8 text-textPrimary shadow-2xl shadow-black/20 border border-borderSlate bg-surface">
             <div className="flex items-start gap-3 mb-4">
               <div className="w-1 rounded-full bg-accent" />
               <div>
                 <div className="text-sm font-semibold uppercase tracking-wider text-accent mb-2">MacroMate Pro</div>
-                <div className="text-6xl font-black mb-1">$9.99</div>
+                <div className="text-5xl md:text-6xl font-black mb-1">$9.99</div>
               </div>
             </div>
             <div className="text-textSecondary mb-8">/month after free trial</div>
@@ -150,7 +121,7 @@ export default function LandingPage() {
           <h2 className="text-4xl font-black text-textPrimary mb-12">Meet the Founder</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center">
-              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
+              <div className="relative w-full h-80 sm:h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Rock.jpg"
                   fill={true}
@@ -161,7 +132,7 @@ export default function LandingPage() {
               <p className="text-accent font-medium text-center">Rock Climbing</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
+              <div className="relative w-full h-80 sm:h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Professional.jpg"
                   fill={true}
@@ -172,7 +143,7 @@ export default function LandingPage() {
               <p className="text-accent font-medium text-center">Founder & Developer</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="relative w-full h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
+              <div className="relative w-full h-80 sm:h-[400px] overflow-hidden rounded-2xl border border-[#2A2A2A] mb-4">
                 <Image
                   src="/Football.jpg"
                   fill={true}

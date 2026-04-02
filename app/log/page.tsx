@@ -522,7 +522,7 @@ export default function LogPage() {
                   </div>
                   <span className="text-sm text-textSecondary">{barcodeProduct.servingSize}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
                   <div className="bg-surface2 rounded-2xl p-4">
                     <p className="font-semibold text-white">Per 100g</p>
                     <p>Calories: {barcodeProduct.energyKcal100g}</p>
@@ -619,7 +619,7 @@ export default function LogPage() {
               className="w-full px-4 py-4 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent resize-none"
               placeholder="What did you eat? e.g. 'Chicken burrito bowl'"
             />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="number"
                 value={manualNutrition.fiber}
@@ -678,7 +678,7 @@ export default function LogPage() {
             </div>
             <div className="space-y-3 mb-6">
               <EditableField label="Meal Name" value={mealData.foodName} onChange={v => updateMealField('foodName', v)} isText />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <EditableField label="Calories (kcal)" value={mealData.calories} onChange={v => updateMealField('calories', v)} />
                 <EditableField label="Protein (g)" value={mealData.protein} onChange={v => updateMealField('protein', v)} />
                 <EditableField label="Carbs (g)" value={mealData.carbs} onChange={v => updateMealField('carbs', v)} />

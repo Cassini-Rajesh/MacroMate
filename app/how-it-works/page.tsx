@@ -1,11 +1,8 @@
 'use client'
 
-'use client'
-
 import Image from 'next/image'
-import Link from 'next/link'
 import { Camera, Loader2 } from 'lucide-react'
-import Logo from '../../components/Logo'
+import Navbar from '../../components/Navbar'
 import { useState } from 'react'
 
 export default function HowItWorksPage() {
@@ -32,37 +29,7 @@ export default function HowItWorksPage() {
 
   return (
     <div className="min-h-screen bg-primary text-white">
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-primary border-b border-accent">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo />
-            <span className="font-black text-xl text-white">MacroMate</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-white font-medium hover:text-accent transition-colors px-3 py-2">
-              Home
-            </Link>
-            <Link href="/how-it-works" className="text-accent font-medium hover:text-accentSoft transition-colors px-3 py-2">
-              How It Works
-            </Link>
-            <Link href="/about" className="text-white font-medium hover:text-accent transition-colors px-3 py-2">
-              About
-            </Link>
-            <Link href="/contact" className="text-white font-medium hover:text-accent transition-colors px-3 py-2">
-              Contact
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-white font-medium hover:text-accent transition-colors px-4 py-2">
-              Sign In
-            </Link>
-            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-semibold px-5 py-2.5 rounded-xl transition-colors">
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Content */}
       <main className="pt-32 pb-20 px-4">

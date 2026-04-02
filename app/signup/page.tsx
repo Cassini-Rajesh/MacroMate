@@ -104,7 +104,7 @@ export default function SignupPage() {
               <label className="block text-sm font-semibold text-white mb-2">Password</label>
               <input type="password" value={formData.password} onChange={e => update('password', e.target.value)} required className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all" placeholder="••••••••" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-white mb-2">Age</label>
                 <input type="number" value={formData.age} onChange={e => update('age', e.target.value)} required min="16" max="40" className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all" placeholder="21" />
@@ -116,7 +116,7 @@ export default function SignupPage() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-white mb-2">Height</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input type="number" value={formData.heightFt} onChange={e => update('heightFt', e.target.value)} required min="4" max="7" className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all" placeholder="5 ft" />
                 <input type="number" value={formData.heightIn} onChange={e => update('heightIn', e.target.value)} required min="0" max="11" className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all" placeholder="10 in" />
               </div>
