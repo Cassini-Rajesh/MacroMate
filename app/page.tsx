@@ -148,38 +148,47 @@ export default function LandingPage() {
       <section className="py-20 px-4 bg-primary">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-black text-textPrimary mb-12">Meet the Founder</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
             <div className="flex flex-col items-center">
-              <Image
-                src="/Rock.jpg"
-                width={400}
-                height={400}
-                objectFit="cover"
-                className="w-full h-[350px] rounded-2xl mb-4"
-                alt="Rock Climbing"
-              />
+              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+                <Image
+                  src="/Rock.jpg"
+                  width={400}
+                  height={450}
+                  objectFit="cover"
+                  objectPosition="center center"
+                  className="w-full h-full"
+                  alt="Rock Climbing"
+                />
+              </div>
               <p className="text-accent font-medium text-center">Rock Climbing</p>
             </div>
             <div className="flex flex-col items-center">
-              <Image
-                src="/Professional.jpg"
-                width={400}
-                height={400}
-                objectFit="cover"
-                className="w-full h-[350px] rounded-2xl mb-4"
-                alt="Founder & Developer"
-              />
+              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+                <Image
+                  src="/Professional.jpg"
+                  width={400}
+                  height={450}
+                  objectFit="cover"
+                  objectPosition="center top"
+                  className="w-full h-full"
+                  alt="Founder & Developer"
+                />
+              </div>
               <p className="text-accent font-medium text-center">Founder & Developer</p>
             </div>
             <div className="flex flex-col items-center">
-              <Image
-                src="/Football.jpg"
-                width={400}
-                height={400}
-                objectFit="cover"
-                className="w-full h-[350px] rounded-2xl mb-4"
-                alt="Playing Football"
-              />
+              <div className="w-[400px] h-[450px] overflow-hidden rounded-2xl mb-4">
+                <Image
+                  src="/Football.jpg"
+                  width={400}
+                  height={450}
+                  objectFit="cover"
+                  objectPosition="center center"
+                  className="w-full h-full"
+                  alt="Playing Football"
+                />
+              </div>
               <p className="text-accent font-medium text-center">Playing Football</p>
             </div>
           </div>
