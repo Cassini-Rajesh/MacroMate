@@ -15,7 +15,7 @@ export default function LogoutButton() {
   }
 
   return (
-    <button onClick={handleLogout} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+    <button onClick={handleLogout} className="p-2 text-textSecondary hover:text-white hover:bg-surface2 rounded-xl transition-colors">
       <LogOut className="w-5 h-5" />
     </button>
   )

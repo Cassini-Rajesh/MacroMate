@@ -5,15 +5,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --color-background: #0F172A;
-  --color-surface: #1E293B;
-  --color-border: #334155;
-  --color-accent: #F97316;
-  --color-accent-soft: #FB923C;
+  --color-background: #0A0A0A;
+  --color-surface: #141414;
+  --color-surface-secondary: #1C1C1C;
+  --color-border: #2A2A2A;
+  --color-accent: #D4A017;
+  --color-accent-soft: #F0C040;
   --color-success: #22C55E;
   --color-danger: #EF4444;
-  --color-text-primary: #F8FAFC;
-  --color-text-secondary: #94A3B8;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
   --color-macro-blue: #3B82F6;
   --color-macro-purple: #A78BFA;
 }
@@ -35,7 +36,7 @@ body {
 }
 
 ::selection {
-  background: rgba(249, 115, 22, 0.25);
+  background: rgba(212, 160, 23, 0.25);
   color: var(--color-text-primary);
 }
 

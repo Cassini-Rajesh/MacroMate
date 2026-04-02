@@ -32,53 +32,53 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-primary flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <Logo />
-            <span className="font-black text-2xl text-gray-900">MacroMate</span>
+            <span className="font-black text-2xl text-white">MacroMate</span>
           </Link>
-          <h1 className="text-3xl font-black text-gray-900">Welcome back!</h1>
-          <p className="text-gray-500 mt-2">Sign in to track your macros</p>
+          <h1 className="text-3xl font-black text-white">Welcome back!</h1>
+          <p className="text-textSecondary mt-2">Sign in to track your macros</p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-surface rounded-3xl shadow-sm border border-borderSlate p-8">
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+              <label className="block text-sm font-semibold text-white mb-2">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all"
                 placeholder="you@college.edu"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+              <label className="block text-sm font-semibold text-white mb-2">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-borderSlate bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent transition-all"
                 placeholder="••••••••"
               />
             </div>
-            {error && <p className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl">{error}</p>}
+            {error && <p className="text-danger text-sm bg-[#2b0f0f] px-4 py-3 rounded-xl">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-colors"
+              className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-3.5 rounded-xl transition-colors"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          <p className="text-center text-gray-500 mt-6 text-sm">
+          <p className="text-center text-textSecondary mt-6 text-sm">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-green-600 font-semibold hover:underline">
+            <Link href="/signup" className="text-accent font-semibold hover:text-accentSoft">
               Sign up free
             </Link>
           </p>

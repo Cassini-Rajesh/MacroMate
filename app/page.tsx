@@ -7,31 +7,31 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-primary text-textPrimary">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-primary/95 backdrop-blur-md border-b border-borderSlate">
+      <nav className="fixed top-0 w-full z-50 bg-primary border-b border-accent">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Logo />
-            <span className="font-black text-xl text-textPrimary">MacroMate</span>
+            <span className="font-black text-xl text-white">MacroMate</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
+            <Link href="/" className="text-white hover:text-accent transition-colors px-3 py-2">
               Home
             </Link>
-            <Link href="/how-it-works" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
+            <Link href="/how-it-works" className="text-white hover:text-accent transition-colors px-3 py-2">
               How It Works
             </Link>
-            <Link href="/about" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
+            <Link href="/about" className="text-white hover:text-accent transition-colors px-3 py-2">
               About
             </Link>
-            <Link href="/contact" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
+            <Link href="/contact" className="text-white hover:text-accent transition-colors px-3 py-2">
               Contact
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-textPrimary border border-borderSlate px-4 py-2 rounded-xl transition-colors hover:border-accent hover:text-accent">
+            <Link href="/login" className="text-white border border-borderSlate px-4 py-2 rounded-xl transition-colors hover:border-accent">
               Sign In
             </Link>
-            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-white font-semibold px-5 py-2.5 rounded-xl transition-colors">
+            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-semibold px-5 py-2.5 rounded-xl transition-colors">
               Get Started
             </Link>
           </div>
@@ -41,23 +41,23 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-accentSoft/15 text-accent font-semibold px-4 py-2 rounded-full text-sm mb-6">
+          <div className="inline-flex items-center gap-2 border border-accent text-accent font-semibold px-4 py-2 rounded-full text-sm mb-6">
             <Zap className="w-4 h-4" />
             AI-Powered Nutrition Tracking
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-textPrimary leading-tight mb-6">
+          <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
             Track your macros<br />
-            <span className="text-textPrimary">in seconds.</span><br />
+            <span className="text-white">in seconds.</span><br />
             <span className="text-accent">Just snap a photo.</span>
           </h1>
           <p className="text-xl text-textSecondary mb-10 max-w-2xl mx-auto leading-relaxed">
             Built for college students who actually care about what they eat. No more manual logging, no more guessing — just real results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-white font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-accent/20">
+            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-accent/20">
               Start Free 14-Day Trial
             </Link>
-            <Link href="/login" className="bg-surface border border-borderSlate text-textPrimary font-bold text-lg px-8 py-4 rounded-2xl transition-colors hover:bg-borderSlate">
+            <Link href="/login" className="bg-surface border border-borderSlate text-white font-bold text-lg px-8 py-4 rounded-2xl transition-colors hover:bg-surface2">
               Sign In
             </Link>
           </div>
@@ -78,19 +78,19 @@ export default function LandingPage() {
       <section className="py-20 px-4 bg-primary">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-4xl font-black text-textPrimary mb-4">Everything you need to eat smarter</h2>
+            <h2 className="text-4xl font-black text-white mb-4">Everything you need to eat smarter</h2>
             <p className="text-textSecondary text-lg">Three features that make MacroMate actually worth using.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <FeatureCard
               icon={<Camera className="w-7 h-7 text-accent" />}
-              iconBg="bg-accentSoft/20"
+              iconBg="bg-accentSoft/10"
               title="AI Photo Meal Logging"
               description="Snap a photo of your meal and our AI instantly identifies the food, estimates portions, and calculates your macros. It takes 3 seconds."
             />
             <FeatureCard
               icon={<Target className="w-7 h-7 text-accent" />}
-              iconBg="bg-accentSoft/20"
+              iconBg="bg-accentSoft/10"
               title="Custom Macro Targets"
               description="Tell us your goal — cut, bulk, or maintain — and we'll calculate your personalized daily calorie and macro targets using proven formulas."
             />
@@ -182,12 +182,12 @@ function FeatureCard({ icon, iconBg, title, description }: {
   description: string
 }) {
   return (
-    <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="bg-surface rounded-3xl p-8 shadow-sm border border-borderSlate hover:shadow-lg transition-shadow">
       <div className={`w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center mb-5`}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+      <p className="text-textSecondary leading-relaxed">{description}</p>
     </div>
   )
 }

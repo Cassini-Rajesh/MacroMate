@@ -9,15 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#0F172A',
-        surface: '#1E293B',
-        borderSlate: '#334155',
-        accent: '#F97316',
-        accentSoft: '#FB923C',
+        primary: '#0A0A0A',
+        surface: '#141414',
+        surface2: '#1C1C1C',
+        borderSlate: '#2A2A2A',
+        accent: '#D4A017',
+        accentSoft: '#F0C040',
         success: '#22C55E',
         danger: '#EF4444',
-        textPrimary: '#F8FAFC',
-        textSecondary: '#94A3B8',
+        textPrimary: '#FFFFFF',
+        textSecondary: '#A0A0A0',
         macroBlue: '#3B82F6',
         macroPurple: '#A78BFA',
       },

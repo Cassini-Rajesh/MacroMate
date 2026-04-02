@@ -365,20 +365,20 @@ export default function LogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-primary text-white">
       <style>{`@keyframes scanLine { 0%, 100% { transform: translateX(-50%) translateY(0%); } 50% { transform: translateX(-50%) translateY(100%); } }`}</style>
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-primary border-b border-borderSlate">
         <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-4">
-          <Link href="/dashboard" className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <Link href="/dashboard" className="p-2 rounded-xl transition-colors hover:bg-surface">
+            <ArrowLeft className="w-5 h-5 text-white" />
           </Link>
-          <h1 className="text-2xl font-black text-gray-900">Log a Meal</h1>
+          <h1 className="text-2xl font-black text-white">Log a Meal</h1>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-2xl">
+        <div className="flex gap-2 mb-6 bg-surface p-1 rounded-2xl">
           {[
             { id: 'photo', label: 'Photo', icon: Camera },
             { id: 'barcode', label: 'Barcode', icon: Upload },
@@ -393,7 +393,7 @@ export default function LogPage() {
                 setError('')
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all ${
-                tab === t.id ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
+                tab === t.id ? 'bg-primary text-white shadow-sm' : 'text-textSecondary'
               }`}
             >
               <t.icon className="w-4 h-4" />
@@ -407,23 +407,23 @@ export default function LogPage() {
           <div className="space-y-4">
             <div
               onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-gray-200 rounded-3xl p-10 text-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all"
+              className="border-2 border-borderSlate rounded-3xl p-10 text-center cursor-pointer bg-surface2 hover:border-accent hover:bg-surface transition-all"
             >
               {imagePreview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={imagePreview} alt="Meal preview" className="max-h-64 mx-auto rounded-2xl object-cover" />
               ) : (
                 <div>
-                  <Upload className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 font-medium">Tap to upload a photo</p>
-                  <p className="text-gray-400 text-sm mt-1">JPG, PNG, HEIC supported</p>
+                  <Upload className="w-10 h-10 text-textSecondary mx-auto mb-3" />
+                  <p className="text-textSecondary font-medium">Tap to upload a photo</p>
+                  <p className="text-textSecondary text-sm mt-1">JPG, PNG, HEIC supported</p>
                 </div>
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-            <p className="text-gray-400 text-sm">Works best with photos under 10MB</p>
+            <p className="text-textSecondary text-sm">Works best with photos under 10MB</p>
             {imageFile && !mealData && (
-              <button onClick={analyzePhoto} disabled={loading} className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+              <button onClick={analyzePhoto} disabled={loading} className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
                 {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : 'Analyze with AI'}
               </button>
             )}
@@ -437,10 +437,10 @@ export default function LogPage() {
               value={voiceText}
               onChange={e => setVoiceText(e.target.value)}
               rows={4}
-              className="w-full px-4 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
+              className="w-full px-4 py-4 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent resize-none"
               placeholder="Describe what you ate... e.g. 'Two scrambled eggs with whole wheat toast and a large glass of orange juice'"
             />
-            <button onClick={() => analyzeText(voiceText)} disabled={!voiceText || loading} className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+            <button onClick={() => analyzeText(voiceText)} disabled={!voiceText || loading} className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
               {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : 'Analyze with AI'}
             </button>
           </div>
@@ -449,15 +449,15 @@ export default function LogPage() {
         {/* Barcode Tab */}
         {tab === 'barcode' && (
           <div className="space-y-4">
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 text-center">
-              <p className="text-gray-900 font-semibold text-lg mb-3">Scan a barcode with your camera</p>
+            <div className="rounded-3xl border border-borderSlate bg-surface p-6 text-center">
+              <p className="text-white font-semibold text-lg mb-3">Scan a barcode with your camera</p>
               <div className="grid gap-3">
                 {!scanning ? (
                   <button
                     type="button"
                     onClick={startCameraScanning}
                     disabled={cameraLoading}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-3xl transition-colors flex items-center justify-center gap-3"
+                    className="w-full bg-accent hover:bg-accentSoft text-black font-bold py-4 rounded-3xl transition-colors flex items-center justify-center gap-3"
                   >
                     {cameraLoading ? 'Starting camera…' : 'Start Camera'}
                   </button>
@@ -465,7 +465,7 @@ export default function LogPage() {
                   <button
                     type="button"
                     onClick={stopCameraScanning}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-3xl transition-colors"
+                    className="w-full bg-danger hover:bg-red-600 text-white font-bold py-4 rounded-3xl transition-colors"
                   >
                     Stop Camera
                   </button>
@@ -473,58 +473,58 @@ export default function LogPage() {
               </div>
               {cameraError && <div className="text-red-600 text-sm mt-3">{cameraError}</div>}
               {permissionDenied && (
-                <div className="text-sm text-gray-600 mt-2">
+                <div className="text-sm text-textSecondary mt-2">
                   Camera permission was denied. Use manual barcode entry below.
                 </div>
               )}
             </div>
 
             {scanning && (
-              <div className={`relative rounded-3xl overflow-hidden border ${scanFlash ? 'border-emerald-400 shadow-[0_0_0_6px_rgba(16,185,129,0.25)]' : 'border-gray-200'} bg-black aspect-video`}>
+              <div className={`relative rounded-3xl overflow-hidden border ${scanFlash ? 'border-accent shadow-[0_0_0_6px_rgba(212,160,23,0.25)]' : 'border-borderSlate'} bg-black aspect-video`}>
                 <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
                 <div className="pointer-events-none absolute inset-0">
                   <div
-                    className="absolute left-1/2 h-0.5 w-2/3 bg-green-400/80"
+                    className="absolute left-1/2 h-0.5 w-2/3 bg-accent/80"
                     style={{ transform: 'translateX(-50%)', animation: 'scanLine 2s ease-in-out infinite' }}
                   />
                 </div>
               </div>
             )}
 
-            <p className="text-gray-500 text-sm">Point the camera at a barcode and hold steady until it is detected.</p>
+            <p className="text-textSecondary text-sm">Point the camera at a barcode and hold steady until it is detected.</p>
 
             <div className="grid gap-3">
               <input
                 value={manualBarcode}
                 onChange={e => setManualBarcode(e.target.value)}
                 placeholder="Enter barcode manually"
-                className={`w-full px-4 py-3 rounded-2xl border ${permissionDenied ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-green-400 text-sm`}
+                className={`w-full px-4 py-3 rounded-2xl border ${permissionDenied ? 'border-danger bg-[#3f1515]' : 'border-borderSlate bg-surface'} focus:outline-none focus:ring-2 focus:ring-accent text-sm text-textPrimary`}
               />
               <button
                 type="button"
                 onClick={() => manualBarcode && fetchBarcodeProduct(manualBarcode)}
                 disabled={!manualBarcode || loadingBarcode}
-                className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-colors"
+                className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-3 rounded-2xl transition-colors"
               >
                 {loadingBarcode ? 'Looking up product…' : 'Lookup Product'}
               </button>
             </div>
             {barcodeError && <div className="text-red-600 text-sm">{barcodeError}</div>}
             {barcode && !barcodeProduct && !loadingBarcode && (
-              <div className="text-sm text-gray-600">Detected barcode: {barcode}</div>
+              <div className="text-sm text-textSecondary">Detected barcode: {barcode}</div>
             )}
             {barcodeProduct && (
-              <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
+              <div className="bg-surface rounded-3xl p-5 border border-borderSlate shadow-sm space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{barcodeProduct.productName}</h3>
-                    <p className="text-gray-500 text-sm">{barcodeProduct.brand}</p>
+                    <h3 className="text-lg font-bold text-white">{barcodeProduct.productName}</h3>
+                    <p className="text-textSecondary text-sm">{barcodeProduct.brand}</p>
                   </div>
-                  <span className="text-sm text-gray-500">{barcodeProduct.servingSize}</span>
+                  <span className="text-sm text-textSecondary">{barcodeProduct.servingSize}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-                  <div className="bg-gray-50 rounded-2xl p-4">
-                    <p className="font-semibold text-gray-900">Per 100g</p>
+                  <div className="bg-surface2 rounded-2xl p-4">
+                    <p className="font-semibold text-white">Per 100g</p>
                     <p>Calories: {barcodeProduct.energyKcal100g}</p>
                     <p>Protein: {barcodeProduct.proteins100g}g</p>
                     <p>Carbs: {barcodeProduct.carbohydrates100g}g</p>
@@ -534,8 +534,8 @@ export default function LogPage() {
                     <p>Sodium: {Math.round(barcodeProduct.sodium100g * 1000)}mg</p>
                     <p>Saturated Fat: {barcodeProduct.saturatedFat100g}g</p>
                   </div>
-                  <div className="bg-gray-50 rounded-2xl p-4">
-                    <p className="font-semibold text-gray-900">Per Serving</p>
+                  <div className="bg-surface2 rounded-2xl p-4">
+                    <p className="font-semibold text-white">Per Serving</p>
                     <p>Calories: {barcodeProduct.energyKcalServing ? barcodeProduct.energyKcalServing : '—'}</p>
                     <p>Protein: {barcodeProduct.energyKcalServing ? (barcodeProduct.proteins100g * 1).toFixed(1) : '—'}g</p>
                     <p>Carbs: {barcodeProduct.energyKcalServing ? (barcodeProduct.carbohydrates100g * 1).toFixed(1) : '—'}g</p>
@@ -553,7 +553,7 @@ export default function LogPage() {
                       type="button"
                       onClick={() => setSelectedServings(value as 0.5 | 1 | 1.5 | 2)}
                       className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-                        selectedServings === value ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        selectedServings === value ? 'bg-accent text-black' : 'bg-surface2 text-textPrimary hover:bg-surface'
                       }`}
                     >
                       {value}x
@@ -600,7 +600,7 @@ export default function LogPage() {
                       portionEstimate: `${selectedServings} x ${barcodeProduct.servingSize}`,
                     })
                   }}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition-colors"
+                  className="w-full bg-accent hover:bg-accentSoft text-black font-bold py-4 rounded-2xl transition-colors"
                 >
                   Use Product
                 </button>
@@ -616,7 +616,7 @@ export default function LogPage() {
               value={manualText}
               onChange={e => setManualText(e.target.value)}
               rows={3}
-              className="w-full px-4 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
+              className="w-full px-4 py-4 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent resize-none"
               placeholder="What did you eat? e.g. 'Chicken burrito bowl'"
             />
             <div className="grid grid-cols-2 gap-3">
@@ -625,44 +625,44 @@ export default function LogPage() {
                 value={manualNutrition.fiber}
                 onChange={e => setManualNutrition(prev => ({ ...prev, fiber: Number(e.target.value) }))}
                 placeholder="Fiber (g)"
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                className="w-full px-4 py-3 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent text-sm"
               />
               <input
                 type="number"
                 value={manualNutrition.sugar}
                 onChange={e => setManualNutrition(prev => ({ ...prev, sugar: Number(e.target.value) }))}
                 placeholder="Sugar (g)"
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                className="w-full px-4 py-3 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent text-sm"
               />
               <input
                 type="number"
                 value={manualNutrition.sodium}
                 onChange={e => setManualNutrition(prev => ({ ...prev, sodium: Number(e.target.value) }))}
                 placeholder="Sodium (mg)"
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                className="w-full px-4 py-3 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent text-sm"
               />
               <input
                 type="number"
                 value={manualNutrition.saturatedFat}
                 onChange={e => setManualNutrition(prev => ({ ...prev, saturatedFat: Number(e.target.value) }))}
                 placeholder="Saturated Fat (g)"
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                className="w-full px-4 py-3 rounded-2xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent text-sm"
               />
             </div>
-            <button onClick={() => analyzeText(manualText)} disabled={!manualText || loading} className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+            <button onClick={() => analyzeText(manualText)} disabled={!manualText || loading} className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
               {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : 'Analyze with AI'}
             </button>
           </div>
         )}
 
-        {error && <div className="mt-4 bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm">{error}</div>}
+        {error && <div className="mt-4 bg-[#331111] text-danger px-4 py-3 rounded-xl text-sm">{error}</div>}
 
         {/* Confirmation Card */}
         {mealData && (
-          <div className="mt-6 bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">AI Analysis</h2>
+          <div className="mt-6 bg-surface rounded-3xl p-6 border border-borderSlate shadow-sm">
+            <h2 className="text-lg font-bold text-white mb-1">AI Analysis</h2>
             {mealData.portionEstimate && (
-              <p className="text-gray-400 text-sm mb-4">Portion: {mealData.portionEstimate}</p>
+              <p className="text-textSecondary text-sm mb-4">Portion: {mealData.portionEstimate}</p>
             )}
             <div className="flex flex-wrap gap-2 mb-4">
               {(['1/4', '1/2', '3/4', 'Full'] as const).map(option => (
@@ -670,7 +670,7 @@ export default function LogPage() {
                   key={option}
                   type="button"
                   onClick={() => selectPortion(option)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition ${selectedPortion === option ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition ${selectedPortion === option ? 'bg-accent text-black' : 'bg-surface2 text-textSecondary hover:bg-surface'}`}
                 >
                   {option}
                 </button>
@@ -690,7 +690,7 @@ export default function LogPage() {
               </div>
             </div>
             <p className="text-gray-400 text-xs mb-4">Feel free to adjust any values before saving.</p>
-            <button onClick={saveMeal} disabled={saving} className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+            <button onClick={saveMeal} disabled={saving} className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
               {saving ? <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</> : 'Save to Dashboard'}
             </button>
           </div>
@@ -703,12 +703,12 @@ export default function LogPage() {
 function EditableField({ label, value, onChange, isText }: { label: string; value: string | number; onChange: (v: string) => void; isText?: boolean }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-500 mb-1">{label}</label>
+      <label className="block text-xs font-semibold text-textSecondary mb-1">{label}</label>
       <input
         type={isText ? 'text' : 'number'}
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm font-medium"
+        className="w-full px-3 py-2.5 rounded-xl border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent text-sm font-medium"
       />
     </div>
   )

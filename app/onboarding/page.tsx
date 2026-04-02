@@ -57,14 +57,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-primary flex items-center justify-center px-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
             <Logo />
           </div>
-          <h1 className="text-3xl font-black text-gray-900 mb-2">One last thing!</h1>
-          <p className="text-gray-500">How active are you on a typical day? This helps us nail your calorie targets.</p>
+          <h1 className="text-3xl font-black text-white mb-2">One last thing!</h1>
+          <p className="text-textSecondary">How active are you on a typical day? This helps us nail your calorie targets.</p>
         </div>
 
         <div className="space-y-3 mb-8">
@@ -74,12 +74,12 @@ export default function OnboardingPage() {
               onClick={() => setActivityLevel(level.value)}
               className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
                 activityLevel === level.value
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  ? 'border-accent bg-surface'
+                  : 'border-borderSlate bg-surface2 hover:border-accentSoft'
               }`}
             >
-              <div className="font-bold text-gray-900">{level.label}</div>
-              <div className="text-gray-500 text-sm mt-0.5">{level.desc}</div>
+              <div className="font-bold text-white">{level.label}</div>
+              <div className="text-textSecondary text-sm mt-0.5">{level.desc}</div>
             </button>
           ))}
         </div>
@@ -87,7 +87,7 @@ export default function OnboardingPage() {
         <button
           onClick={handleSubmit}
           disabled={!activityLevel || loading}
-          className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-colors text-lg"
+          className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors text-lg"
         >
           {loading ? 'Calculating your targets...' : "Let's go!"}
         </button>

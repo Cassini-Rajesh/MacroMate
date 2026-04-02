@@ -4,13 +4,13 @@ import Logo from '../../components/Logo'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-primary text-white">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <nav className="fixed top-0 w-full z-50 bg-primary border-b border-accent">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Logo />
-            <span className="font-black text-xl text-gray-900">MacroMate</span>
+            <span className="font-black text-xl text-white">MacroMate</span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">
@@ -27,10 +27,10 @@ export default function AboutPage() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-4 py-2">
+            <Link href="/login" className="text-white font-medium hover:text-accent transition-colors px-4 py-2">
               Sign In
             </Link>
-            <Link href="/signup" className="bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors">
+            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-black font-semibold px-5 py-2.5 rounded-xl transition-colors">
               Get Started
             </Link>
           </div>
@@ -40,16 +40,16 @@ export default function AboutPage() {
       {/* Content */}
       <main className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl font-black text-gray-900 text-center mb-8">
+          <h1 className="text-5xl font-black text-white text-center mb-8">
             Built by a college student, for college students
           </h1>
-          <p className="text-xl text-gray-500 text-center mb-16 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-textSecondary text-center mb-16 max-w-3xl mx-auto leading-relaxed">
             MacroMate was born out of frustration with existing nutrition apps that require tedious manual logging. As a Penn State Aerospace Engineering student focused on body recomposition, I wanted something smarter — an app that uses AI to do the heavy lifting so you can focus on your goals.
           </p>
 
           {/* Video Placeholder */}
           <div className="mb-16">
-            <div className="relative w-full max-w-2xl mx-auto aspect-video bg-gray-800 rounded-2xl flex items-center justify-center">
+            <div className="relative w-full max-w-2xl mx-auto aspect-video bg-surface rounded-2xl flex items-center justify-center border border-borderSlate">
               <Play className="w-16 h-16 text-white" />
               <span className="absolute bottom-4 left-4 text-white text-lg font-semibold">
                 30-Second Pitch Video — Coming Soon
@@ -59,8 +59,8 @@ export default function AboutPage() {
 
           {/* Mission */}
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-6">Our Mission</h2>
+            <p className="text-lg text-textSecondary max-w-2xl mx-auto">
               To make professional-level nutrition tracking accessible to every college student — regardless of their budget or background.
             </p>
           </div>

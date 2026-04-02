@@ -16,7 +16,7 @@ export default function EmailCaptureForm() {
 
   if (submitted) {
     return (
-      <div className="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg">
+      <div className="bg-surface border border-borderSlate text-success px-4 py-3 rounded-lg">
         You&apos;re on the list! We&apos;ll be in touch soon.
       </div>
     )
@@ -29,7 +29,7 @@ export default function EmailCaptureForm() {
         placeholder="Your Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-4 py-3 rounded-lg border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent"
         required
       />
       <input
@@ -37,12 +37,12 @@ export default function EmailCaptureForm() {
         placeholder="Your Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-4 py-3 rounded-lg border border-borderSlate bg-surface text-textPrimary focus:outline-none focus:ring-2 focus:ring-accent"
         required
       />
       <button
         type="submit"
-        className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition-colors"
+        className="w-full bg-accent hover:bg-accentSoft text-black font-semibold py-3 rounded-lg transition-colors"
       >
         Join the Waitlist
       </button>

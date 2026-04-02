@@ -15,14 +15,14 @@ export default function MacroBar({ label, consumed, target, color, unit }: Props
   return (
     <div>
       <div className="flex justify-between items-center mb-1.5">
-        <span className="text-sm font-semibold text-gray-700">{label}</span>
-        <span className={`text-sm font-bold ${over ? 'text-red-500' : 'text-gray-600'}`}>
+        <span className="text-sm font-semibold text-textPrimary">{label}</span>
+        <span className={`text-sm font-bold ${over ? 'text-danger' : 'text-textSecondary'}`}>
           {consumed} / {target} {unit}
         </span>
       </div>
-      <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-3 bg-surface2 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-500 ${over ? 'bg-red-400' : color}`}
+          className={`h-full rounded-full transition-all duration-500 ${over ? 'bg-danger' : color}`}
           style={{ width: `${pct}%` }}
         />
       </div>
