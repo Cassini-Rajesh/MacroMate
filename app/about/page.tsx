@@ -49,7 +49,7 @@ export default function AboutPage() {
           </p>
           <div className="flex justify-center mb-10">
             <Image
-              src="/professional.jpg"
+              src="/Professional.jpg"
               width={200}
               height={200}
               objectFit="cover"

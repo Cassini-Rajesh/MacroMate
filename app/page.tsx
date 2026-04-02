@@ -151,7 +151,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center">
               <Image
-                src="/professional.jpg"
+                src="/Professional.jpg"
                 width={400}
                 height={400}
                 objectFit="cover"
@@ -162,7 +162,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col items-center">
               <Image
-                src="/rock.jpg"
+                src="/Rock.jpg"
                 width={400}
                 height={400}
                 objectFit="cover"
@@ -173,7 +173,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col items-center">
               <Image
-                src="/football.jpg"
+                src="/Football.jpg"
                 width={400}
                 height={400}
                 objectFit="cover"
