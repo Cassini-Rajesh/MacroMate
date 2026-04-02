@@ -151,25 +151,25 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center">
               <Image
-                src="/Professional.jpg"
-                width={400}
-                height={400}
-                objectFit="cover"
-                className="rounded-2xl mb-4"
-                alt="Cassini — Founder & Developer"
-              />
-              <p className="text-textSecondary font-medium">Cassini — Founder & Developer</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <Image
                 src="/Rock.jpg"
                 width={400}
                 height={400}
                 objectFit="cover"
-                className="rounded-2xl mb-4"
-                alt="Cassini — Rock Climbing"
+                className="w-full h-[350px] rounded-2xl mb-4"
+                alt="Rock Climbing"
               />
-              <p className="text-textSecondary font-medium">Cassini — Rock Climbing</p>
+              <p className="text-accent font-medium text-center">Rock Climbing</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Image
+                src="/Professional.jpg"
+                width={400}
+                height={400}
+                objectFit="cover"
+                className="w-full h-[350px] rounded-2xl mb-4"
+                alt="Founder & Developer"
+              />
+              <p className="text-accent font-medium text-center">Founder & Developer</p>
             </div>
             <div className="flex flex-col items-center">
               <Image
@@ -177,10 +177,10 @@ export default function LandingPage() {
                 width={400}
                 height={400}
                 objectFit="cover"
-                className="rounded-2xl mb-4"
-                alt="Cassini — Playing Football"
+                className="w-full h-[350px] rounded-2xl mb-4"
+                alt="Playing Football"
               />
-              <p className="text-textSecondary font-medium">Cassini — Playing Football</p>
+              <p className="text-accent font-medium text-center">Playing Football</p>
             </div>
           </div>
         </div>
