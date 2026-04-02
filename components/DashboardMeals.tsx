@@ -137,44 +137,44 @@ export default function DashboardMeals({ initialMeals, profile }: Props) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 text-textPrimary">
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl border border-red-100">{error}</div>
+        <div className="bg-danger/10 text-danger px-4 py-3 rounded-2xl border border-danger/30">{error}</div>
       )}
 
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-lg font-bold text-gray-900 mb-5">Today&apos;s Progress</h2>
+      <div className="bg-surface rounded-3xl p-6 border border-borderSlate">
+        <h2 className="text-lg font-bold text-textPrimary mb-5">Today&apos;s Progress</h2>
         <div className="space-y-4">
-          <MacroBar label="Calories" consumed={totals.calories} target={profile.daily_calories} color="bg-orange-400" unit="kcal" />
-          <MacroBar label="Protein" consumed={totals.protein} target={profile.daily_protein} color="bg-blue-400" unit="g" />
-          <MacroBar label="Carbs" consumed={totals.carbs} target={profile.daily_carbs} color="bg-yellow-400" unit="g" />
-          <MacroBar label="Fat" consumed={totals.fat} target={profile.daily_fat} color="bg-pink-400" unit="g" />
+          <MacroBar label="Calories" consumed={totals.calories} target={profile.daily_calories} color="bg-accent" unit="kcal" />
+          <MacroBar label="Protein" consumed={totals.protein} target={profile.daily_protein} color="bg-success" unit="g" />
+          <MacroBar label="Carbs" consumed={totals.carbs} target={profile.daily_carbs} color="bg-macroBlue" unit="g" />
+          <MacroBar label="Fat" consumed={totals.fat} target={profile.daily_fat} color="bg-macroPurple" unit="g" />
         </div>
         <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="rounded-3xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+          <div className="rounded-3xl border border-borderSlate bg-surface p-4 text-sm text-textPrimary">
             <div className="font-semibold">🌾 Fiber</div>
             <div className="mt-2 text-lg font-bold">{totals.fiber}g</div>
-            <div className="text-xs text-blue-600/80">Goal 25g</div>
+            <div className="text-xs text-textSecondary">Goal 25g</div>
           </div>
-          <div className="rounded-3xl border border-pink-100 bg-pink-50 p-4 text-sm text-pink-700">
+          <div className="rounded-3xl border border-borderSlate bg-surface p-4 text-sm text-textPrimary">
             <div className="font-semibold">🍬 Sugar</div>
             <div className="mt-2 text-lg font-bold">{totals.sugar}g</div>
-            <div className="text-xs text-pink-600/80">Track only</div>
+            <div className="text-xs text-textSecondary">Track only</div>
           </div>
-          <div className="rounded-3xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+          <div className="rounded-3xl border border-borderSlate bg-surface p-4 text-sm text-textPrimary">
             <div className="font-semibold">🧂 Sodium</div>
             <div className="mt-2 text-lg font-bold">{totals.sodium}mg</div>
-            <div className="text-xs text-yellow-600/80">Limit 2300mg</div>
+            <div className="text-xs text-textSecondary">Limit 2300mg</div>
           </div>
-          <div className="rounded-3xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-3xl border border-borderSlate bg-surface p-4 text-sm text-textPrimary">
             <div className="font-semibold">🥩 Saturated Fat</div>
             <div className="mt-2 text-lg font-bold">{totals.saturatedFat}g</div>
-            <div className="text-xs text-red-600/80">Limit 20g</div>
+            <div className="text-xs text-textSecondary">Limit 20g</div>
           </div>
         </div>
       </div>
 
-      <Link href="/log" className="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 rounded-2xl transition-all hover:scale-[1.01] shadow-lg shadow-green-100">
+      <Link href="/log" className="flex items-center justify-center gap-3 bg-accent hover:bg-accentSoft text-white font-bold text-lg py-4 rounded-2xl transition-all hover:scale-[1.01] shadow-lg shadow-accent/20">
         <PlusIcon />
         Log a Meal
       </Link>

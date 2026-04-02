@@ -5,33 +5,33 @@ import EmailCaptureForm from '../components/EmailCaptureForm'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-primary text-textPrimary">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <nav className="fixed top-0 w-full z-50 bg-primary/95 backdrop-blur-md border-b border-borderSlate">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Logo />
-            <span className="font-black text-xl text-gray-900">MacroMate</span>
+            <span className="font-black text-xl text-textPrimary">MacroMate</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-green-500 font-medium hover:text-green-600 transition-colors px-3 py-2">
+            <Link href="/" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
               Home
             </Link>
-            <Link href="/how-it-works" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">
+            <Link href="/how-it-works" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
               How It Works
             </Link>
-            <Link href="/about" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">
+            <Link href="/about" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
               About
             </Link>
-            <Link href="/contact" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-3 py-2">
+            <Link href="/contact" className="text-textSecondary hover:text-textPrimary transition-colors px-3 py-2">
               Contact
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-gray-600 font-medium hover:text-gray-900 transition-colors px-4 py-2">
+            <Link href="/login" className="text-textPrimary border border-borderSlate px-4 py-2 rounded-xl transition-colors hover:border-accent hover:text-accent">
               Sign In
             </Link>
-            <Link href="/signup" className="bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors">
+            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-white font-semibold px-5 py-2.5 rounded-xl transition-colors">
               Get Started
             </Link>
           </div>
@@ -41,62 +41,62 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 font-semibold px-4 py-2 rounded-full text-sm mb-6">
+          <div className="inline-flex items-center gap-2 bg-accentSoft/15 text-accent font-semibold px-4 py-2 rounded-full text-sm mb-6">
             <Zap className="w-4 h-4" />
             AI-Powered Nutrition Tracking
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight mb-6">
+          <h1 className="text-5xl md:text-6xl font-black text-textPrimary leading-tight mb-6">
             Track your macros<br />
-            <span className="text-green-500">in seconds.</span><br />
-            <span className="text-orange-400">Just snap a photo.</span>
+            <span className="text-textPrimary">in seconds.</span><br />
+            <span className="text-accent">Just snap a photo.</span>
           </h1>
-          <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-textSecondary mb-10 max-w-2xl mx-auto leading-relaxed">
             Built for college students who actually care about what they eat. No more manual logging, no more guessing — just real results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="bg-green-500 hover:bg-green-600 text-white font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-green-200">
+            <Link href="/signup" className="bg-accent hover:bg-accentSoft text-white font-bold text-lg px-8 py-4 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-accent/20">
               Start Free 14-Day Trial
             </Link>
-            <Link href="/login" className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg px-8 py-4 rounded-2xl transition-colors">
+            <Link href="/login" className="bg-surface border border-borderSlate text-textPrimary font-bold text-lg px-8 py-4 rounded-2xl transition-colors hover:bg-borderSlate">
               Sign In
             </Link>
           </div>
-          <p className="text-sm text-gray-400 mt-4">No credit card required • Cancel anytime</p>
+          <p className="text-sm text-textSecondary mt-4">No credit card required • Cancel anytime</p>
         </div>
       </section>
 
       {/* Email Capture */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Stay Updated</h2>
-          <p className="text-gray-600 mb-6">Get notified when we launch and get exclusive early access.</p>
+      <section className="py-16 px-4 bg-primary">
+        <div className="max-w-md mx-auto text-center bg-surface border border-borderSlate rounded-3xl p-10">
+          <h2 className="text-2xl font-bold text-textPrimary mb-4">Stay Updated</h2>
+          <p className="text-textSecondary mb-6">Get notified when we launch and get exclusive early access.</p>
           <EmailCaptureForm />
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-primary">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-4xl font-black text-gray-900 mb-4">Everything you need to eat smarter</h2>
-            <p className="text-gray-500 text-lg">Three features that make MacroMate actually worth using.</p>
+            <h2 className="text-4xl font-black text-textPrimary mb-4">Everything you need to eat smarter</h2>
+            <p className="text-textSecondary text-lg">Three features that make MacroMate actually worth using.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <FeatureCard
-              icon={<Camera className="w-7 h-7 text-green-500" />}
-              iconBg="bg-green-50"
+              icon={<Camera className="w-7 h-7 text-accent" />}
+              iconBg="bg-accentSoft/20"
               title="AI Photo Meal Logging"
               description="Snap a photo of your meal and our AI instantly identifies the food, estimates portions, and calculates your macros. It takes 3 seconds."
             />
             <FeatureCard
-              icon={<Target className="w-7 h-7 text-orange-500" />}
-              iconBg="bg-orange-50"
+              icon={<Target className="w-7 h-7 text-accent" />}
+              iconBg="bg-accentSoft/20"
               title="Custom Macro Targets"
               description="Tell us your goal — cut, bulk, or maintain — and we'll calculate your personalized daily calorie and macro targets using proven formulas."
             />
             <FeatureCard
-              icon={<TrendingUp className="w-7 h-7 text-purple-500" />}
-              iconBg="bg-purple-50"
+              icon={<TrendingUp className="w-7 h-7 text-macroPurple" />}
+              iconBg="bg-macroPurple/10"
               title="Weekly Progress Tracking"
               description="Watch your streak grow. See your weekly averages, hit your goals consistently, and build the habits that actually stick long-term."
             />
@@ -105,14 +105,19 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-primary">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-4xl font-black text-gray-900 mb-4">Simple, honest pricing.</h2>
-          <p className="text-gray-500 mb-10">One plan. Everything included. No hidden fees.</p>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl p-8 text-white shadow-2xl shadow-green-200">
-            <div className="text-sm font-semibold uppercase tracking-wider text-green-100 mb-2">MacroMate Pro</div>
-            <div className="text-6xl font-black mb-1">$9.99</div>
-            <div className="text-green-100 mb-8">/month after free trial</div>
+          <h2 className="text-4xl font-black text-textPrimary mb-4">Simple, honest pricing.</h2>
+          <p className="text-textSecondary mb-10">One plan. Everything included. No hidden fees.</p>
+          <div className="rounded-3xl p-8 text-textPrimary shadow-2xl shadow-black/20 border border-borderSlate bg-surface">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-1 rounded-full bg-accent" />
+              <div>
+                <div className="text-sm font-semibold uppercase tracking-wider text-accent mb-2">MacroMate Pro</div>
+                <div className="text-6xl font-black mb-1">$9.99</div>
+              </div>
+            </div>
+            <div className="text-textSecondary mb-8">/month after free trial</div>
             <ul className="space-y-3 mb-8 text-left">
               {[
                 'AI photo meal logging',
@@ -123,32 +128,32 @@ export default function LandingPage() {
                 'Cancel anytime',
               ].map(f => (
                 <li key={f} className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-white" />
+                  <div className="w-5 h-5 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-accent" />
                   </div>
-                  <span className="text-white/90">{f}</span>
+                  <span className="text-textSecondary">{f}</span>
                 </li>
               ))}
             </ul>
-            <Link href="/signup" className="block w-full bg-white text-green-600 font-black text-lg py-4 rounded-2xl hover:bg-green-50 transition-colors">
+            <Link href="/signup" className="block w-full bg-accent hover:bg-accentSoft text-white font-black text-lg py-4 rounded-2xl transition-colors">
               Start Free 14-Day Trial
             </Link>
-            <p className="text-green-100 text-sm mt-3">No credit card required</p>
+            <p className="text-textSecondary text-sm mt-3">No credit card required</p>
           </div>
         </div>
       </section>
 
       {/* Meet the Founder */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-primary">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-black text-gray-900 mb-12">Meet the Founder</h2>
+          <h2 className="text-4xl font-black text-textPrimary mb-12">Meet the Founder</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex flex-col items-center">
-                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-gray-500 text-sm text-center">Your photo here</span>
+                <div className="w-32 h-32 bg-surface rounded-full flex items-center justify-center mb-4 border border-borderSlate">
+                  <span className="text-textSecondary text-sm text-center">Your photo here</span>
                 </div>
-                <p className="text-gray-600 font-medium">Cassini — Founder & Developer</p>
+                <p className="text-textSecondary font-medium">Cassini — Founder & Developer</p>
               </div>
             ))}
           </div>
@@ -156,14 +161,14 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-4 border-t border-gray-100">
+      <footer className="py-10 px-4 border-t border-borderSlate">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Logo />
-            <span className="font-black text-gray-900">MacroMate</span>
+            <span className="font-black text-textPrimary">MacroMate</span>
           </div>
-          <p className="text-gray-400 text-sm">Eat smart. Stay fueled. Crush your goals.</p>
-          <p className="text-gray-400 text-sm">© 2024 MacroMate</p>
+          <p className="text-textSecondary text-sm">Eat smart. Stay fueled. Crush your goals.</p>
+          <p className="text-textSecondary text-sm">© 2026 MacroMate</p>
         </div>
       </footer>
     </div>
