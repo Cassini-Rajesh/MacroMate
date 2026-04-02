@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     siteName: 'MacroMate',
     images: [
       {
-        url: 'https://macro-mate-three.vercel.app/og-image.svg',
+        url: 'https://macro-mate-three.vercel.app/api/og',
         width: 1200,
         height: 630,
         alt: 'MacroMate AI Nutrition Tracker',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'MacroMate — AI Nutrition Tracker',
     description: 'Track your macros in seconds. Just snap a photo.',
-    images: ['https://macro-mate-three.vercel.app/og-image.svg'],
+    images: ['https://macro-mate-three.vercel.app/api/og'],
   },
 }
 
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/og-image.svg" />
+        <link rel="icon" href="/api/og" />
       </head>
       <body className="bg-primary text-textPrimary antialiased">
         {children}
