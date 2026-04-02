@@ -6,6 +6,7 @@ import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Mic, PenLine, ArrowLeft, Upload, Loader2 } from 'lucide-react'
+import { BrowserMultiFormatReader, IScannerControls } from '@zxing/browser'
 import Link from 'next/link'
 
 interface MealData {
@@ -37,18 +38,6 @@ interface BarcodeProduct {
   energyKcalServing?: number
 }
 
-interface ZXingLibrary {
-  BrowserMultiFormatReader: new () => {
-    decodeFromImageElement(image: HTMLImageElement): Promise<{ text: string; getText?: () => string }>
-  }
-}
-
-declare global {
-  interface Window {
-    ZXing?: ZXingLibrary
-  }
-}
-
 export default function LogPage() {
   const [tab, setTab] = useState<'photo' | 'barcode' | 'voice' | 'manual'>('photo')
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -62,16 +51,24 @@ export default function LogPage() {
   const [selectedPortion, setSelectedPortion] = useState<'1/4' | '1/2' | '3/4' | 'Full'>('Full')
   const [selectedServings, setSelectedServings] = useState<0.5 | 1 | 1.5 | 2>(1)
   const [barcode, setBarcode] = useState('')
-  const [barcodeImagePreview, setBarcodeImagePreview] = useState<string | null>(null)
   const [manualBarcode, setManualBarcode] = useState('')
   const [barcodeProduct, setBarcodeProduct] = useState<BarcodeProduct | null>(null)
   const [barcodeError, setBarcodeError] = useState('')
+  const [scanning, setScanning] = useState(false)
+  const [cameraLoading, setCameraLoading] = useState(false)
+  const [cameraError, setCameraError] = useState('')
+  const [permissionDenied, setPermissionDenied] = useState(false)
+  const [scanFlash, setScanFlash] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingBarcode, setLoadingBarcode] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
-  const barcodeInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
+  const controlsRef = useRef<IScannerControls | null>(null)
+  const lastScannedRef = useRef<string | null>(null)
+  const scanTimeoutRef = useRef<number | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -124,71 +121,87 @@ export default function LogPage() {
     }
   }
 
-  async function handleBarcodeImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+  function stopCameraScanning() {
+    setScanning(false)
+    setCameraLoading(false)
+    if (scanTimeoutRef.current) {
+      window.clearTimeout(scanTimeoutRef.current)
+      scanTimeoutRef.current = null
+    }
 
-    setBarcodeImagePreview(URL.createObjectURL(file))
+    if (videoRef.current?.srcObject instanceof MediaStream) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop())
+      videoRef.current.srcObject = null
+    }
+
+    controlsRef.current?.stop()
+    controlsRef.current = null
+    codeReaderRef.current = null
+    lastScannedRef.current = null
+  }
+
+  async function startCameraScanning() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError('Camera is not available on this device.')
+      return
+    }
+
+    setCameraError('')
+    setPermissionDenied(false)
     setBarcodeError('')
     setBarcodeProduct(null)
-    setBarcode('')
+    setCameraLoading(true)
 
     try {
-      const decoded = await decodeBarcodeImage(file)
-      if (!decoded) {
-        setBarcodeError('Unable to detect barcode from image. Please enter it manually.')
-        return
-      }
-      setBarcode(decoded)
-      await fetchBarcodeProduct(decoded)
-    } catch (err) {
-      console.error('Barcode decode failed', err)
-      setBarcodeError('Unable to detect barcode from image. Please enter it manually.')
-    }
-  }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      })
 
-  async function loadZXing() {
-    if (typeof window === 'undefined') throw new Error('Window not available')
-    if (window.ZXing) return window.ZXing
-
-    return new Promise<ZXingLibrary>((resolve, reject) => {
-      const existingScript = document.querySelector('script[data-zxing]') as HTMLScriptElement | null
-      if (existingScript && window.ZXing) {
-        resolve(window.ZXing)
+      if (!videoRef.current) {
+        stopCameraScanning()
         return
       }
 
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/@zxing/library@latest/umd/index.min.js'
-      script.async = true
-      script.setAttribute('data-zxing', 'true')
-      script.onload = () => {
-        if (window.ZXing) resolve(window.ZXing)
-        else reject(new Error('ZXing failed to load'))
+      videoRef.current.srcObject = stream
+      videoRef.current.setAttribute('playsinline', 'true')
+      await videoRef.current.play()
+      setScanning(true)
+
+      const codeReader = new BrowserMultiFormatReader()
+      codeReaderRef.current = codeReader
+
+      controlsRef.current = await codeReader.decodeFromVideoElement(videoRef.current, async (result, error) => {
+        if (result) {
+          const decoded = result.getText()
+          if (!decoded || lastScannedRef.current === decoded) return
+
+          lastScannedRef.current = decoded
+          stopCameraScanning()
+          setScanFlash(true)
+          scanTimeoutRef.current = window.setTimeout(() => setScanFlash(false), 500)
+
+          setBarcode(decoded)
+          await fetchBarcodeProduct(decoded)
+        } else if (error) {
+          console.warn('ZXing scan error:', error)
+        }
+      })
+    } catch (err: unknown) {
+      if (err instanceof DOMException) {
+        if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
+          setPermissionDenied(true)
+          setCameraError('Camera permission denied. Please enter the barcode manually.')
+        } else if (err.name === 'NotFoundError') {
+          setCameraError('No camera was found on this device.')
+        } else {
+          setCameraError('Unable to access the camera. Please try again or use manual entry.')
+        }
+      } else {
+        setCameraError('Unable to access the camera. Please try again or use manual entry.')
       }
-      script.onerror = () => reject(new Error('Failed to load ZXing'))
-      document.body.appendChild(script)
-    })
-  }
-
-  async function decodeBarcodeImage(file: File) {
-    const ZXing = await loadZXing()
-    const imageUrl = URL.createObjectURL(file)
-    const img = new Image()
-    img.src = imageUrl
-
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error('Image load failed'))
-    })
-
-    const codeReader = new ZXing.BrowserMultiFormatReader()
-    try {
-      const result = await codeReader.decodeFromImageElement(img)
-      URL.revokeObjectURL(imageUrl)
-      return result?.text || result?.getText?.() || ''
+      stopCameraScanning()
     } finally {
-      URL.revokeObjectURL(imageUrl)
+      setCameraLoading(false)
     }
   }
 
@@ -353,6 +366,7 @@ export default function LogPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>{`@keyframes scanLine { 0%, 100% { transform: translateX(-50%) translateY(0%); } 50% { transform: translateX(-50%) translateY(100%); } }`}</style>
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-4">
           <Link href="/dashboard" className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
@@ -437,38 +451,55 @@ export default function LogPage() {
           <div className="space-y-4">
             <div className="rounded-3xl border border-gray-200 bg-white p-6 text-center">
               <p className="text-gray-900 font-semibold text-lg mb-3">Scan a barcode with your camera</p>
-              <button
-                type="button"
-                onClick={() => barcodeInputRef.current?.click()}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-3xl transition-colors flex items-center justify-center gap-3"
-              >
-                📷 Scan Barcode with Camera
-              </button>
-              <input
-                ref={barcodeInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleBarcodeImageChange}
-                className="hidden"
-              />
-              <p className="text-gray-500 text-sm mt-3">This uses your device camera on mobile and a file picker on desktop.</p>
+              <div className="grid gap-3">
+                {!scanning ? (
+                  <button
+                    type="button"
+                    onClick={startCameraScanning}
+                    disabled={cameraLoading}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-3xl transition-colors flex items-center justify-center gap-3"
+                  >
+                    {cameraLoading ? 'Starting camera…' : 'Start Camera'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={stopCameraScanning}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-3xl transition-colors"
+                  >
+                    Stop Camera
+                  </button>
+                )}
+              </div>
+              {cameraError && <div className="text-red-600 text-sm mt-3">{cameraError}</div>}
+              {permissionDenied && (
+                <div className="text-sm text-gray-600 mt-2">
+                  Camera permission was denied. Use manual barcode entry below.
+                </div>
+              )}
             </div>
-            {barcodeImagePreview && (
-              <div className="rounded-3xl overflow-hidden border border-gray-200 bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={barcodeImagePreview} alt="Barcode preview" className="w-full object-contain" />
+
+            {scanning && (
+              <div className={`relative rounded-3xl overflow-hidden border ${scanFlash ? 'border-emerald-400 shadow-[0_0_0_6px_rgba(16,185,129,0.25)]' : 'border-gray-200'} bg-black aspect-video`}>
+                <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
+                <div className="pointer-events-none absolute inset-0">
+                  <div
+                    className="absolute left-1/2 h-0.5 w-2/3 bg-green-400/80"
+                    style={{ transform: 'translateX(-50%)', animation: 'scanLine 2s ease-in-out infinite' }}
+                  />
+                </div>
               </div>
             )}
-            <p className="text-gray-500 text-sm">If the barcode image cannot be read, enter the code manually below.</p>
+
+            <p className="text-gray-500 text-sm">Point the camera at a barcode and hold steady until it is detected.</p>
+
             <div className="grid gap-3">
               <input
                 value={manualBarcode}
                 onChange={e => setManualBarcode(e.target.value)}
                 placeholder="Enter barcode manually"
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                className={`w-full px-4 py-3 rounded-2xl border ${permissionDenied ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-green-400 text-sm`}
               />
-              {barcode && <p className="text-sm text-gray-600">Detected barcode: {barcode}</p>}
               <button
                 type="button"
                 onClick={() => manualBarcode && fetchBarcodeProduct(manualBarcode)}
@@ -479,6 +510,9 @@ export default function LogPage() {
               </button>
             </div>
             {barcodeError && <div className="text-red-600 text-sm">{barcodeError}</div>}
+            {barcode && !barcodeProduct && !loadingBarcode && (
+              <div className="text-sm text-gray-600">Detected barcode: {barcode}</div>
+            )}
             {barcodeProduct && (
               <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
                 <div className="flex items-start justify-between gap-4">
