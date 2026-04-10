@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { createClient } from '@/lib/supabase/server'
 
 const anthropicApiKey = process.env.ANTHROPIC_API_KEY
 if (!anthropicApiKey) {
@@ -71,6 +72,43 @@ export async function POST(req: NextRequest) {
     const contentType = req.headers.get('content-type') ?? ''
 
     if (contentType.includes('multipart/form-data')) {
+      // --- Daily limit check for free users ---
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!sub || sub.status !== 'active') {
+        const todayStart = new Date()
+        todayStart.setHours(0, 0, 0, 0)
+        const tomorrowStart = new Date(todayStart)
+        tomorrowStart.setDate(tomorrowStart.getDate() + 1)
+
+        const { count } = await supabase
+          .from('meals')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .gte('logged_at', todayStart.toISOString())
+          .lt('logged_at', tomorrowStart.toISOString())
+
+        if ((count ?? 0) >= 3) {
+          return NextResponse.json(
+            {
+              error: 'LIMIT_REACHED',
+              message:
+                'You have used your 3 free AI photo scans for today. Upgrade to Premium for unlimited scans.',
+            },
+            { status: 403 }
+          )
+        }
+      }
+      // --- End limit check ---
+
       // Photo analysis
       const formData = await req.formData()
       const imageFile = formData.get('image') as File

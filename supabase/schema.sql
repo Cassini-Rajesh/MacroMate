@@ -12,8 +12,12 @@ CREATE TABLE IF NOT EXISTS public.users (
   daily_carbs INT,
   daily_fat INT,
   onboarding_complete BOOLEAN DEFAULT FALSE,
+  stripe_customer_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration: add stripe_customer_id if upgrading an existing database
+-- ALTER TABLE public.users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT;
 
 -- Meals table
 CREATE TABLE IF NOT EXISTS public.meals (

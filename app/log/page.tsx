@@ -2,12 +2,12 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Mic, PenLine, ArrowLeft, Upload, Loader2 } from 'lucide-react'
-import { BrowserMultiFormatReader, IScannerControls } from '@zxing/browser'
 import Link from 'next/link'
+import { BrowserMultiFormatReader, IScannerControls } from '@zxing/browser'
 
 interface MealData {
   foodName: string
@@ -63,6 +63,9 @@ export default function LogPage() {
   const [loadingBarcode, setLoadingBarcode] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [limitReached, setLimitReached] = useState(false)
+  const [aiScanCount, setAiScanCount] = useState(0)
+  const [isPremium, setIsPremium] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
@@ -71,6 +74,36 @@ export default function LogPage() {
   const scanTimeoutRef = useRef<number | null>(null)
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchScanStatus() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .single()
+
+      if (sub?.status === 'active') {
+        setIsPremium(true)
+        return
+      }
+
+      const todayStart = new Date()
+      todayStart.setHours(0, 0, 0, 0)
+      const { count } = await supabase
+        .from('meals')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('logged_at', todayStart.toISOString())
+
+      setAiScanCount(count ?? 0)
+    }
+    fetchScanStatus()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function compressImage(file: File) {
     const imageBitmap = await createImageBitmap(file)
@@ -275,9 +308,12 @@ export default function LogPage() {
       const res = await fetch('/api/analyze-meal', { method: 'POST', body: formData })
       const data = await res.json()
 
-      if (!res.ok || data.error) {
+      if (res.status === 403 && data.error === 'LIMIT_REACHED') {
+        setLimitReached(true)
+      } else if (!res.ok || data.error) {
         setError(data.error || `Analyze failed: ${res.status}`)
       } else {
+        setLimitReached(false)
         const merged = {
           fiber: manualNutrition.fiber || data.fiber || 0,
           sugar: manualNutrition.sugar || data.sugar || 0,
@@ -422,10 +458,32 @@ export default function LogPage() {
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
             <p className="text-textSecondary text-sm">Works best with photos under 10MB</p>
+            {!isPremium && (
+              <p
+                className="text-sm font-medium"
+                style={{ color: aiScanCount >= 3 ? '#D4A017' : '#6B7280' }}
+              >
+                {aiScanCount} / 3 free AI scans used today
+              </p>
+            )}
             {imageFile && !mealData && (
               <button onClick={analyzePhoto} disabled={loading} className="w-full bg-accent hover:bg-accentSoft disabled:opacity-50 text-black font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
                 {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : 'Analyze with AI'}
               </button>
+            )}
+            {limitReached && (
+              <div className="rounded-2xl p-4 text-center" style={{ backgroundColor: '#1C1C1C', border: '1px solid #D4A017' }}>
+                <p className="font-semibold mb-3" style={{ color: '#D4A017' }}>
+                  You&apos;ve used your 3 free AI scans today
+                </p>
+                <Link
+                  href="/subscribe"
+                  className="inline-block px-6 py-3 rounded-xl font-bold text-sm transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#D4A017', color: '#0A0A0A' }}
+                >
+                  Upgrade to Premium — $4.99/mo
+                </Link>
+              </div>
             )}
           </div>
         )}

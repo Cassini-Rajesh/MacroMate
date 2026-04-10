@@ -2,11 +2,17 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import LogoutButton from '@/components/LogoutButton'
 import DashboardMeals from '@/components/DashboardMeals'
+import UpgradedBanner from '@/components/UpgradedBanner'
 import { Flame } from 'lucide-react'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { upgraded?: string }
+}) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -31,6 +37,8 @@ export default async function DashboardPage() {
   const isExpired = sub && sub.status !== 'active' && new Date(sub.trial_ends_at) < now
   if (isExpired) redirect('/subscribe')
 
+  const isPremium = sub?.status === 'active'
+
   // Today's meals
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -53,8 +61,35 @@ export default async function DashboardPage() {
   const firstName = profile.name?.split(' ')[0] ?? 'there'
   const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
+  const isFreeAtLimit = !isPremium && (meals?.length ?? 0) >= 3
+
   return (
     <div className="min-h-screen bg-primary text-textPrimary">
+      {searchParams.upgraded === 'true' && <UpgradedBanner />}
+
+      {isFreeAtLimit && (
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <div
+            className="rounded-2xl px-4 py-3 flex items-center justify-between gap-4"
+            style={{
+              backgroundColor: '#1C1C1C',
+              borderLeft: '3px solid #D4A017',
+            }}
+          >
+            <p className="text-sm font-medium" style={{ color: '#D4A017' }}>
+              Upgrade to Premium for unlimited AI scans — $4.99/month
+            </p>
+            <Link
+              href="/subscribe"
+              className="text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap transition-opacity hover:opacity-90 flex-shrink-0"
+              style={{ backgroundColor: '#D4A017', color: '#0A0A0A' }}
+            >
+              Upgrade Now
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-primary border-b border-borderSlate">
         <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between">
