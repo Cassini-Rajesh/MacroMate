@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Logo from './Logo'
+import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -13,9 +14,29 @@ const navItems = [
   { href: '/contact', label: 'Contact' },
 ]
 
+type AuthState = 'loading' | 'loggedOut' | 'free' | 'premium'
+
 export default function Navbar() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [authState, setAuthState] = useState<AuthState>('loading')
+
+  useEffect(() => {
+    async function checkAuth() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setAuthState('loggedOut'); return }
+
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .single()
+
+      setAuthState(sub?.status === 'active' ? 'premium' : 'free')
+    }
+    checkAuth()
+  }, [])
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
@@ -42,6 +63,25 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
+          {authState === 'loggedOut' && (
+            <Link
+              href="/subscribe"
+              className={`px-3 py-2 transition-colors font-medium ${
+                isActive('/subscribe') ? 'text-accent' : 'text-white hover:text-accent'
+              }`}
+            >
+              Pricing
+            </Link>
+          )}
+          {authState === 'free' && (
+            <Link
+              href="/subscribe"
+              className="px-3 py-2 font-semibold transition-opacity hover:opacity-80"
+              style={{ color: '#D4A017' }}
+            >
+              Upgrade
+            </Link>
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -84,6 +124,27 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+            {authState === 'loggedOut' && (
+              <Link
+                href="/subscribe"
+                onClick={() => setMenuOpen(false)}
+                className={`min-h-[56px] flex items-center px-4 text-lg font-medium transition-colors ${
+                  isActive('/subscribe') ? 'text-accent' : 'text-white hover:text-accent'
+                }`}
+              >
+                Pricing
+              </Link>
+            )}
+            {authState === 'free' && (
+              <Link
+                href="/subscribe"
+                onClick={() => setMenuOpen(false)}
+                className="min-h-[56px] flex items-center px-4 text-lg font-semibold"
+                style={{ color: '#D4A017' }}
+              >
+                Upgrade
+              </Link>
+            )}
             <div className="border-t border-borderSlate px-4 py-4 flex items-center gap-3">
               <Link
                 href="/login"

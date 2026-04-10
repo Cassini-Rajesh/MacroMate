@@ -102,6 +102,23 @@ export default async function DashboardPage({
               <Flame className="w-4 h-4" />
               {streak} day streak
             </div>
+            {!isPremium && (
+              <Link
+                href="/subscribe"
+                className="text-xs font-bold px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80 whitespace-nowrap"
+                style={{ borderColor: '#D4A017', color: '#D4A017' }}
+              >
+                Upgrade
+              </Link>
+            )}
+            {isPremium && (
+              <Link
+                href="/subscribe"
+                className="text-xs font-medium text-textSecondary hover:text-white transition-colors whitespace-nowrap"
+              >
+                Manage Plan
+              </Link>
+            )}
             <LogoutButton />
           </div>
         </div>
