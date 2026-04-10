@@ -98,7 +98,7 @@ export default function LandingPage() {
               <div className="w-1 rounded-full bg-accent" />
               <div>
                 <div className="text-sm font-semibold uppercase tracking-wider text-accent mb-2">MacroMate Pro</div>
-                <div className="text-5xl md:text-6xl font-black mb-1">$9.99</div>
+                <div className="text-5xl md:text-6xl font-black mb-1">$4.99</div>
               </div>
             </div>
             <div className="text-textSecondary mb-8">/month after free trial</div>
