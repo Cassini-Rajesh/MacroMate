@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { Camera, Target, TrendingUp, Check, Zap } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Logo from '../components/Logo'
-import EmailCaptureForm from '../components/EmailCaptureForm'
 
 export default function LandingPage() {
   return (
@@ -37,12 +36,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Email Capture */}
-      <section className="py-16 px-4 bg-primary">
-        <div className="max-w-md mx-auto text-center bg-surface border border-borderSlate rounded-3xl p-10">
-          <h2 className="text-2xl font-bold text-textPrimary mb-4">Stay Updated</h2>
-          <p className="text-textSecondary mb-6">Get notified when we launch and get exclusive early access.</p>
-          <EmailCaptureForm />
+      {/* CTA */}
+      <section className="py-24 px-4" style={{ backgroundColor: '#141414' }}>
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            Ready to start tracking?
+          </h2>
+          <p className="text-lg mb-10" style={{ color: '#A0A0A0' }}>
+            Join hundreds of Penn State students already hitting their macro goals.
+          </p>
+          <Link
+            href="/signup"
+            className="inline-block px-10 py-4 rounded-2xl font-black text-lg transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#D4A017', color: '#0A0A0A' }}
+          >
+            Get Started Free
+          </Link>
+          <p className="mt-4 text-sm" style={{ color: '#A0A0A0' }}>
+            No credit card required · Cancel anytime
+          </p>
         </div>
       </section>
 
