@@ -42,6 +42,7 @@ export async function middleware(request: NextRequest) {
     '/',
     '/login',
     '/signup',
+    '/subscribe',
     '/about',
     '/contact',
     '/how-it-works',
